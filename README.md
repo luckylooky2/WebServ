@@ -1,8 +1,9 @@
-# webserv
+# WEBSERV INFORMATION
 
-
-
-### log
-
-log는 class 내부에 작성하여 기록된다.
-log 객체는 클래스당 최초에 한번만 생성되어야 한다.
+## TIMELINE
+### 3.8			HTTP 완벽가이드 4부, 5부 학습
+### 3.9,10		RFC 7230 ~ 5 분석
+### 3.11,12		echo server 구현
+### 			nginx architecture 분석
+### 3.13~19		설계
+### 3.20~31		구현
