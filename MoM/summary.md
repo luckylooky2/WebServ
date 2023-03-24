@@ -1,12 +1,62 @@
 # 프로젝트 진행상황
 
+## 03/22 수
 
+- **방향성**
 
-### 0322 수
+  1. unit test 도입
+     - 함수 단위로 고려할 수 있는 모든 경우의 수를 고려
+     - 현재는 파일 분리 이슈 ⇒ seongtki님이 해결
+  2. 클래스 및 함수 설명 주석 추가
+     - 클래스 멤버 변수 설명, 멤버 함수 매개 변수 설명 등…
+  3. 디렉토리 구조
+     - 현재 : 통합
+       ```cpp
+       /include
+         - File.hpp
+         - Exception.hpp
+       /srcs
+         - File.cpp
+         - Exception.cpp
+       ```
+     - 목표 : 객체 그룹 별 디렉토리
+       ```cpp
+       /File
+         - File.hpp
+         - File.cpp
+       /Exception
+         - Exception.hpp
+         - Exception.cpp
+       ```
+     - 효과
+       - 객체가 가진 관리 포인트를 최소한으로
+       - 클래스 확장에 유리한 방법
+  4. Exception Base class
+     - global한 업무와 관련 있는 Exception : Exception 디렉토리에서 관리
+     - 특정 객체 업무와 관련 있는 Exception : 각 객체 그룹 디렉토리에서 추가로 관리
+  5. 라이브러리
+     - c style 라이브러리는 cpp style로 다시 만들어서 사용
+     - cpp style 라이브러리는 그대로 사용
 
+- **논의 내용**
 
+  - 설계 및 구조
+    - 클라이언트와 TCP 연결이 되면 Queue 구조체에 저장 ⇒ 들어온 순서대로 처리
+  - `accept()`와 `recv()`
+    - TCP 연결 이후 일정 시간동안 연결을 끊지 않아야 함
+    - 첫 연결 : `accept()` 이후 바로 `recv()` 를 해주면 되지만
+    - 일정 시간 내에 다시 요청이 오면 `recv()`를 독립적으로 호출해야 하는 문제 ⇒ 어떻게 해결?
+  - `select()`가 I/O를 비동기적으로 처리해주는가?
+    - `select()` 자체와 I/O를 처리해주는 로직은 비동기적으로 돌아가는가?
 
-### 0323 목
+- **이후 작업**
+
+  - 공통 : `select()`, `kqueue()` 공부 및 예제 코드 작성
+  - seongtki : 기본적인 뼈대 작업 계속
+  - chanhyle : request 관련 공부
+  - susong : mime, status 어떤 방식으로 할지 공부
+
+## 03/23 목
 
 - **io multiplexing 토의**
 
@@ -23,7 +73,7 @@
 - **file part**
 
   - FileDescriptor class 추가
-    - 함수구현 8/8 
+    - 함수구현 8/8
     - fd 생성할 때, 무조건 non blocking 설정을 할 지 고민 필요
   - File class 추가
     - 함수구현 1/11
@@ -36,37 +86,35 @@
 
   - ```
     CASE("log", "loglevel")
-    {	
+    {
     	ASSERT(log.isErrorEnabled() == ERROR);
     	return (0);
     }
     ```
 
+## 03/24 금
 
+- **io multiplexing**
 
-### 0324 금
+  - kqueue() 예제 => /util/main.cpp 참고
 
-- io multiplexing 
-- file part
-- request part
+- **file part**
 
+  - fd를 감싸는 FileDescriptor 객체
+    1. 관련 정보를 저장
+    2. file 객체와 socket 객체가 같은 정보를 공유하는 것은 낭비(중복)
+    - socket 객체가 FileDescriptor 객체를 상속하게 만듦
 
+- **request part**
 
+  - 어디까지 요청 객체가 처리할 것인가?
+  - 1. 요청을 받는다 : HTTP 요청 메시지를 네트워크로부터 읽어 들인다. => RequestMessage class
+  - ----- request 파트는 여기까지 -----
+  - 2. 요청을 처리한다 : 요청 메시지를 해석하고 행동을 취한다. => RequestAction class
+  - 3. 리소스에 접근한다 : 메시지에서 지정한 리소스에 접근한다. => RequestResource class
 
+  - header 객체를 만들면 더 편할듯, 각각의 header 객체를 static으로 관리?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- **할 일**
+  - seongtki : 전체적인 틀 실행 파일 제작
+  - chanhyle : 헤더 명세 + request 파서 + request 구조 정리
