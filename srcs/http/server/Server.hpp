@@ -4,37 +4,24 @@
 #include <iostream>
 #include "ServContext.hpp"
 #include "Common.hpp"
-
-
-class Location {
-private:
-	std::string	rootPath;
-	std::string	method;
-public:
-	Location(void);
-};
-
-// client accept info
-class Listen {
-private:
-	std::string _ip;
-	int			_port;
-
-public:
-	Listen(void);
-	
-};
-
+#include "Socket.hpp"
+#include "../../config/block/ServerBlock.hpp"
+#include <list>
 class Server {
 private:
+	Socket&					_socket;
+	std::string				_host;
+	int							_port;
+	std::list<ServerBlock>&		_serverBlocks;
+	//std::clist<Client>		_clients;
+	
+	//int			_maxFd;
+	//int			_readFd;
+	//int			_writeFd;
 	ServContext	_servContext;
-	Fds			_fds;
-	int			_maxFd;
-	int			_readFd;
-	int			_writeFd;
-	//			servers
 	Server(void);
 public:
+	Server( std::string host, int port,  std::list<ServerBlock *> sb);
 };
 
 #endif

@@ -4,11 +4,17 @@
 Logger log = LogFactory::get("test");
 
 CASE("log", "loglevel")
-{
-	
-	// ASSERT(log.isErrorEnabled() == ERROR);
+{	
+	ASSERT(log.isErrorEnabled() == ERROR);
 	return (0);
 }
+
+CASE("log", "loglevel2")
+{
+	ASSERT(log.isErrorEnabled() == ERROR);
+	return (0);
+}
+
 
 
 // #include "test.hpp"
