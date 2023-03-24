@@ -3,7 +3,9 @@ CXX 		= c++
 #CXXFLAGS 	= -Wall -Wextra -Werror -std=c++98
 RM 			= rm -f
 INCS 		= -I
-SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp srcs/exception/Exception.cpp srcs/exception/RuntimeException.cpp
+SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
+				srcs/exception/Exception.cpp srcs/exception/RuntimeException.cpp srcs/exception/IOException.cpp srcs/exception/IllegalStateException.cpp srcs/exception/IllegalArgumentException.cpp srcs/exception/NullPointerException.cpp \
+				srcs/file/FileDescriptor.cpp
 OBJS 		= $(SRCS:.cpp=.o)
 .c.o :
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -4,10 +4,13 @@
 
 #include "Common.hpp"
 
+/*
+	deprecated
+*/
 class ServContext {
 private:
 	Tokens		tokens;
-	Listens		listens;
+	//Listens		listens;
 	Methods		methods;
 	ErrorPages	errorPages;
 	
