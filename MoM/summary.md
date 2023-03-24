@@ -94,6 +94,27 @@
 
 ## 03/24 금
 
-- io multiplexing
-- file part
-- request part
+- **io multiplexing**
+
+  - kqueue() 예제 => /util/main.cpp 참고
+
+- **file part**
+
+  - fd를 감싸는 FileDescriptor 객체
+    1. 관련 정보를 저장
+    2. file 객체와 socket 객체가 같은 정보를 공유하는 것은 낭비(중복)
+    - socket 객체가 FileDescriptor 객체를 상속하게 만듦
+
+- **request part**
+
+  - 어디까지 요청 객체가 처리할 것인가?
+  - 1. 요청을 받는다 : HTTP 요청 메시지를 네트워크로부터 읽어 들인다. => RequestMessage class
+  - ----- request 파트는 여기까지 -----
+  - 2. 요청을 처리한다 : 요청 메시지를 해석하고 행동을 취한다. => RequestAction class
+  - 3. 리소스에 접근한다 : 메시지에서 지정한 리소스에 접근한다. => RequestResource class
+
+  - header 객체를 만들면 더 편할듯, 각각의 header 객체를 static으로 관리?
+
+- **할 일**
+  - seongtki : 전체적인 틀 실행 파일 제작
+  - chanhyle : 헤더 명세 + request 파서 + request 구조 정리
