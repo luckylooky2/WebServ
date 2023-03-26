@@ -1,9 +1,24 @@
 NAME 		= test
 CXX 		= c++
-#CXXFLAGS 	= -Wall -Wextra -Werror -std=c++98
+# CXXFLAGS 	= -Wall -Wextra -Werror -std=c++98
+CXXFLAGS 	= -g
 RM 			= rm -f
 SRCS 		=  ../srcs/log/LogFactory.cpp ../srcs/log/Logger.cpp \
-			   test_main.cpp units/unit_libft_is.cpp case/TestCase.cpp units/unit_log.cpp
+			   test_main.cpp case/TestCase.cpp \
+			   units/unit_libft_is.cpp \
+			   units/unit_log.cpp \
+			   units/unit_request_string.cpp \
+			   ../srcs/http/request/Request.cpp \
+			   ../srcs/http/request/RequestString.cpp \
+			   ../srcs/http/request/RequestParser.cpp \
+			   ../srcs/http/request/RequestLine.cpp \
+			   ../srcs/http/request/Headers.cpp \
+			   ../srcs/exception/IllegalStateException.cpp \
+			   ../srcs/exception/RuntimeException.cpp \
+			   ../srcs/exception/Exception.cpp \
+			   ../srcs/util/split.cpp \
+			   ../srcs/util/trim.cpp
+
 OBJS 		= $(SRCS:.cpp=.o)
 .c.o :
 	$(CXX) $(CXXFLAGS) -c $< -o $@
