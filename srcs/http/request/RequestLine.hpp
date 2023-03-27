@@ -14,7 +14,7 @@ typedef enum s_method
 struct RequestLine {
 	e_method		  _method;
 	std::string		_uri;
-	float			  _version;
+	float			    _version;
 };
 
 #endif

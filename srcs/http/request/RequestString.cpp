@@ -1,4 +1,49 @@
 #include "RequestString.hpp"
+#include <iostream>
+
+/*
+	OCCF
+*/
+
+RequestString::RequestString() {}
+
+RequestString::RequestString(const RequestString& __copy)
+{
+	this->_originString = __copy._originString;
+	this->_requestLine = __copy._requestLine;
+	this->_headers = __copy._headers;
+	this->_body = __copy._body;
+}
+
+RequestString	RequestString::operator=(const RequestString& __copy)
+{
+	if (this != &__copy)
+	{
+		this->_originString = __copy._originString;
+		this->_requestLine = __copy._requestLine;
+		this->_headers = __copy._headers;
+		this->_body = __copy._body;
+	}
+	return (*this);
+}
+
+RequestString::~RequestString() {}
+
+/*
+	Member functions
+*/
+
+RequestString::RequestString(std::string __reqString)
+: _originString(__reqString), _requestLine(""), _headers(""), _body("")
+{
+	// 예외 처리 필요(Parsing exception) e.g. SP, CRLF가 없을 때
+	size_t			requestLineIndex;
+	size_t			headersIndex;
+
+	requestLineIndex = getRequestLineString(__reqString);
+	headersIndex = getHeadersString(__reqString, requestLineIndex);
+	getBodyString(__reqString, headersIndex);
+}
 
 // 유효하지 않은 request-line의 수신자는 400(Bad Request) 오류 또는 301(Moved Permanently) 리다이렉트로 응답
 size_t	RequestString::getRequestLineString(std::string __reqString)
@@ -35,39 +80,6 @@ size_t	RequestString::getBodyString(std::string __reqString, size_t __headersInd
 	_body = __reqString.substr(__headersIndex + 2, __reqString.size() - (__headersIndex + 2));
 	return (__reqString.size());
 }
-
-RequestString::RequestString() {}
-
-RequestString::RequestString(std::string __reqString)
-: _originString(__reqString)
-{
-	// 예외 처리 필요(Parsing exception) e.g. SP, CRLF가 없을 때
-	size_t			requestLineIndex;
-	size_t			headersIndex;
-
-	requestLineIndex = getRequestLineString(__reqString);
-	headersIndex = getHeadersString(__reqString, requestLineIndex);
-	getBodyString(__reqString, headersIndex);
-}
-
-RequestString::RequestString(RequestString& __copy)
-{
-	*this = __copy;
-}
-
-RequestString	RequestString::operator=(RequestString& __copy)
-{
-	if (this != &__copy)
-	{
-		this->_originString = __copy._originString;
-		this->_requestLine = __copy._requestLine;
-		this->_headers = __copy._headers;
-		this->_body = __copy._body;
-	}
-	return (*this);
-}
-
-RequestString::~RequestString() {}
 
 std::string		RequestString::getOrigString() { return (_originString); }
 std::string		RequestString::getRequestLine() { return (_requestLine); }

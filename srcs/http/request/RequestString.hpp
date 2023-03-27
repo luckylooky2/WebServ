@@ -16,16 +16,17 @@
  */
 class RequestString {
 private:
-	RequestString();
 	size_t	getRequestLineString(std::string __reqString);
 	size_t	getHeadersString(std::string __reqString, size_t __requestLineIndex);
 	size_t	getBodyString(std::string __reqString, size_t __headersIndex);
 
 public:
-	RequestString(std::string __reqString);
-	RequestString(RequestString& __copy);
-	RequestString	operator=(RequestString& __copy);
+	RequestString();
+	RequestString(const RequestString& __copy);
+	RequestString	operator=(const RequestString& __copy);
 	~RequestString();
+	
+	RequestString(std::string __reqString);
 
 	std::string		getOrigString();
 	std::string		getRequestLine();
