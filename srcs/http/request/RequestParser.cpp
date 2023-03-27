@@ -1,5 +1,6 @@
 #include "RequestParser.hpp"
 #include "../../exception/IllegalStateException.hpp"
+#include <iostream>
 
 /*
 	OCCF
@@ -9,7 +10,7 @@ RequestParser::RequestParser() {}
 
 RequestParser::RequestParser(const RequestParser& __copy) {}
 
-RequestParser	RequestParser::operator=(const RequestParser& __copy) {}
+RequestParser	RequestParser::operator=(const RequestParser& __copy) { return (*this); }
 
 RequestParser::~RequestParser() {}
 
@@ -77,21 +78,24 @@ Headers		RequestParser::parseHeaders(std::string __headersString)
 	{
 		std::string		fieldName;
 		std::string		fieldValue;
-		std::vector<std::string>	values;
 		size_t			index;
+
 		// 1. 문법 검증
 		// 2. name, value split => 첫번째 :를 찾아서 2개로 나누면 될 듯
 		index = crlf_splited[i].find(':');
+		if (index == std::string::npos)
+			throw IllegalStateException("HTTP Request header field colon error.");
 		fieldName = crlf_splited[i].substr(0, index);
+		if (fieldName.find(SP) != std::string::npos)
+			throw IllegalStateException("HTTP Request headers field name SP error.");
 		// OWS => SP만 인지 확인하기
-		fieldValue = crlf_splited[i].substr(crlf_splited[i][index + 1] == SP ? index + 2 : index + 1, crlf_splited[i].size());
-		index = fieldValue.size() - 1;
-		if (fieldValue[index] == SP)
-			fieldValue.erase(index);
-		// , 단위로 나누고 white space 제거
-		// values = split(fieldValue, ',');
-		// for (size_t i = 0; i < values.size(); i++)
-		// 	trim(values[i]);
+		fieldValue = crlf_splited[i].substr(index + 1, crlf_splited[i].size());
+		if (fieldValue[0] == SP)
+			fieldValue.erase(0, 1);
+		if (fieldValue[fieldValue.size() - 1] == SP)
+			fieldValue.erase(fieldValue.size() - 1, 1);
+		if (fieldValue.find(SP) != std::string::npos)
+			throw IllegalStateException("HTTP Request headers field value SP error.");
 		// 3. key가 있으면 value에 push_back(), 없으면 key, value를 insert()
 		if (headers.keyExist(fieldName))
 			headers.addFieldValue(fieldName, fieldValue);
