@@ -61,13 +61,12 @@ size_t	RequestString::getRequestLineString(std::string __reqString)
 
 size_t	RequestString::getHeadersString(std::string __reqString, size_t __requestLineIndex)
 {
-	size_t						index;
-	std::vector<std::string>	crlf_splited;
+	size_t	index;
 
 	do
 	{
 		index = __reqString.find(CRLF, index) + 2;
-		if (index == std::string::npos || index == __reqString.size())
+		if (index == std::string::npos + 2 || index == __reqString.size())
 			throw IllegalStateException("HTTP Request headers CRLF error.");
 	}
 	while (__reqString.compare(index, 2, CRLF) != 0);
