@@ -11,22 +11,35 @@
 // 3. 리소스에 접근한다 : 메시지에서 지정한 리소스에 접근한다. => RequestResource class
 
 class Request {
-private:
-	Request();
 
 public:
-	Request(std::string __reqString);
-	~Request();
+	typedef std::map<std::string, std::vector<std::string> >	headers_map;
 
+public:
+	Request();
+	~Request();
+	Request(const Request& __copy);
+	Request	operator=(const Request& __copy);
+
+	Request(std::string __reqString);
+	
 	RequestString	getReqString();
 	RequestLine		getRequestLine();
 	Headers			getHeaders();
 
+	e_method		method();
+	std::string		uri();
+	float			version();
+	headers_map		headers();
+	std::string		body();
+	size_t			headerCount();
+
 private:
-	RequestString		_reqString;
-	RequestParser		_parser;
-	RequestLine			_requestLine;
-	Headers				_headers;
+	RequestString	_reqString;
+	RequestParser	_parser; // 필요한가?
+	RequestLine		_requestLine;
+	Headers			_headers;
+	std::string		_body;
 };
 
 #endif
