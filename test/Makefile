@@ -7,11 +7,10 @@ SRCS 		=  ../srcs/log/LogFactory.cpp ../srcs/log/Logger.cpp \
 			   test_main.cpp case/TestCase.cpp \
 			   units/unit_libft_is.cpp \
 			   units/unit_log.cpp \
-			   units/unit_request_string.cpp \
+			   units/unit_request.cpp \
 			   ../srcs/http/request/Request.cpp \
 			   ../srcs/http/request/RequestString.cpp \
 			   ../srcs/http/request/RequestParser.cpp \
-			   ../srcs/http/request/RequestLine.cpp \
 			   ../srcs/http/request/Headers.cpp \
 			   ../srcs/exception/IllegalStateException.cpp \
 			   ../srcs/exception/RuntimeException.cpp \
