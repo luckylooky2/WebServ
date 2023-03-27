@@ -13,11 +13,13 @@
 
 class RequestParser {
 public:
+	RequestParser();
+	RequestParser(const RequestParser& __copy);
+	RequestParser	operator=(const RequestParser& __copy);
+	~RequestParser();
 	RequestLine	parseRequestLine(std::string __requestLineString);
 	Headers		parseHeaders(std::string __headersString);
-	// parseBody();
 
-private:
 };
 
 #endif

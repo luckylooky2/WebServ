@@ -1,5 +1,32 @@
 #include "Headers.hpp"
-#include <iostream>
+
+/*
+	OCCF
+*/
+
+Headers::Headers() : _headers(header_table()), _header_count(0) {}
+
+Headers::Headers(const Headers& __copy)
+{
+	_headers = __copy._headers;
+	_header_count = __copy._header_count;
+}
+
+Headers	Headers::operator=(const Headers& __copy)
+{
+	if (this != &__copy)
+	{
+		_headers = __copy._headers;
+		_header_count = __copy._header_count;
+	}
+	return (*this);
+}
+
+Headers::~Headers() {}
+
+/*
+	Member functions
+*/
 
 bool	Headers::keyExist(std::string __key)
 {
@@ -15,22 +42,14 @@ bool	Headers::keyExist(std::string __key)
 	return false;
 }
 
-void	Headers::insertHeader(std::string __fieldName, std::vector<std::string> __values)
+void	Headers::insertHeader(std::string __fieldName, std::string __fieldValue)
 {
 	_headers.insert(std::make_pair(__fieldName, std::vector<std::string>()));
-	for (size_t i = 0; i < __values.size(); i++)
-		_headers[__fieldName].push_back(__values[i]);
+	_headers[__fieldName].push_back(__fieldValue);
 	_header_count++;
 }
 
-void	Headers::addFieldValue(std::string __fieldName, std::vector<std::string> __values)
+void	Headers::addFieldValue(std::string __fieldName, std::string __fieldValue)
 {
-	for (size_t i = 0; i < __values.size(); i++)
-		_headers[__fieldName].push_back(__values[i]);
-}
-
-Headers::Headers()
-: _headers(header_table()), _header_count(0)
-{
-
+	_headers[__fieldName].push_back(__fieldValue);
 }

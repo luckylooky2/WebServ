@@ -1,6 +1,21 @@
 #include "RequestParser.hpp"
 #include "../../exception/IllegalStateException.hpp"
-#include <iostream>
+
+/*
+	OCCF
+*/
+
+RequestParser::RequestParser() {}
+
+RequestParser::RequestParser(const RequestParser& __copy) {}
+
+RequestParser	RequestParser::operator=(const RequestParser& __copy) {}
+
+RequestParser::~RequestParser() {}
+
+/*
+	Member functions
+*/
 
 // 구현한 것보다 더 긴 메서드를 수신한 서버는 501(Not Implemented)상태 코드 로 응답해야 한다.(SHOULD)
 s_method	setMethod(std::string __method)
@@ -74,14 +89,14 @@ Headers		RequestParser::parseHeaders(std::string __headersString)
 		if (fieldValue[index] == SP)
 			fieldValue.erase(index);
 		// , 단위로 나누고 white space 제거
-		values = split(fieldValue, ',');
-		for (size_t i = 0; i < values.size(); i++)
-			trim(values[i]);
+		// values = split(fieldValue, ',');
+		// for (size_t i = 0; i < values.size(); i++)
+		// 	trim(values[i]);
 		// 3. key가 있으면 value에 push_back(), 없으면 key, value를 insert()
 		if (headers.keyExist(fieldName))
-			headers.addFieldValue(fieldName, values);
+			headers.addFieldValue(fieldName, fieldValue);
 		else
-			headers.insertHeader(fieldName, values);
+			headers.insertHeader(fieldName, fieldValue);
 	}
 	return (headers);
 }
