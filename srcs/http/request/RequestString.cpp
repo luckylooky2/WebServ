@@ -61,7 +61,7 @@ size_t	RequestString::getRequestLineString(std::string __reqString)
 
 size_t	RequestString::getHeadersString(std::string __reqString, size_t __requestLineIndex)
 {
-	size_t	index;
+	size_t	index = __requestLineIndex;
 
 	do
 	{
