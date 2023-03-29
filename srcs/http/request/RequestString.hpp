@@ -2,8 +2,8 @@
 #define REQUESTSTRING_HPP
 
 #include <string>
-#include "../../util/split.hpp"
 #include "../../exception/IllegalStateException.hpp"
+#include "RequestParser.hpp"
 
 #define SP		' '
 #define CRLF	"\r\n"

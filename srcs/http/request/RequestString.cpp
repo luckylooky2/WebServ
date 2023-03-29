@@ -1,5 +1,4 @@
 #include "RequestString.hpp"
-#include <iostream>
 
 /*
 	OCCF
@@ -51,9 +50,9 @@ size_t	RequestString::getRequestLineString(std::string __reqString)
 	size_t						index;
 	std::vector<std::string>	sp_splited;
 
-	index = __reqString.find("\r\n") + 2;
+	index = __reqString.find(CRLF) + 2;
 	_requestLine = __reqString.substr(0, index);
-	sp_splited = split(_requestLine, SP);
+	sp_splited = RequestParser::split(_requestLine, SP);
 	if (sp_splited.size() != 3)
 		throw IllegalStateException("HTTP Request start line SP error.");
 	return (index);
