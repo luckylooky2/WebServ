@@ -1,0 +1,6 @@
+# utils
+.vscode
+.dSYM
+
+# object files
+*.o
