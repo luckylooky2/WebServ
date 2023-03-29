@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include <set>
-#include "Server.hpp"
+// #include "Server.hpp"
 
 //typedef std::vector<Listen>					Listens;
 typedef std::vector<std::string>			Methods;
