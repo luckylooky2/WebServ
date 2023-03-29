@@ -35,11 +35,11 @@ public:
 	size_t			headerCount();
 
 private:
-	RequestString	_reqString;
-	RequestParser	_parser; // 필요한가?
-	RequestLine		_requestLine;
-	Headers			_headers;
-	std::string		_body;
+	RequestString			_reqString;
+	static RequestParser	_parser; // singleton 적용하는 방법
+	RequestLine				_requestLine;
+	Headers					_headers;
+	std::string				_body;
 };
 
 #endif

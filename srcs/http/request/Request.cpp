@@ -9,7 +9,6 @@ Request::Request() {}
 Request::Request(const Request& __copy)
 {
 	_reqString = __copy._reqString;
-	_parser = __copy._parser;
 	_requestLine = __copy._requestLine;
 	_headers = __copy._headers;
 	_body = __copy._body;
@@ -20,7 +19,6 @@ Request	Request::operator=(const Request& __copy)
 	if (this != &__copy)
 	{
 		_reqString = __copy._reqString;
-		_parser = __copy._parser;
 		_requestLine = __copy._requestLine;
 		_headers = __copy._headers;
 		_body = __copy._body;
@@ -37,8 +35,8 @@ Request::~Request() {}
 Request::Request(std::string __reqString)
 : _reqString(__reqString)
 {
-	_requestLine = _parser.parseRequestLine(_reqString.getRequestLine());
-	_headers = _parser.parseHeaders(_reqString.getHeaders());
+	_requestLine = RequestParser::parseRequestLine(_reqString.getRequestLine());
+	_headers = RequestParser::parseHeaders(_reqString.getHeaders());
 	_body = _reqString.getBody();
 }
 RequestString	Request::getReqString() { return (_reqString); }
