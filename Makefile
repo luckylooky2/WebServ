@@ -10,7 +10,8 @@ SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
 				srcs/http/server/Server.cpp srcs/http/server/Socket.cpp \
 				srcs/http/server/Client.cpp srcs/http/server/RWCallback.cpp srcs/http/Webserv.cpp \
 				srcs/iom/KqueueManage.cpp \
-				srcs/address/InetAddress.cpp 
+				srcs/address/InetAddress.cpp \
+				srcs/util/Storage.cpp srcs/http/server/SocketStorage.cpp
 OBJS 		= $(SRCS:.cpp=.o)
 .c.o :
 	$(CXX) $(CXXFLAGS) -c $< -o $@
