@@ -41,6 +41,7 @@ public:
 	~KqueueManage(void);
 	KqueueManage(void);
 	void setEvent(uintptr_t ident, int16_t filter, uint16_t flags, uint32_t fflags, intptr_t data, void *udata);
+	void delEvent(int fd);
 	void kevent(void);
 	int eventCount(void) const;
 	void create(FileDescriptor& fd, RWCallback& callback, int opt);

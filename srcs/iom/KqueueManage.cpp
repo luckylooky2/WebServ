@@ -63,8 +63,25 @@ KqueueManage::~KqueueManage(void) {}
 void KqueueManage::setEvent(uintptr_t ident, int16_t filter, uint16_t flags, uint32_t fflags, intptr_t data, void *udata) {
  	struct kevent temp_event;
 	EV_SET(&temp_event, ident, filter, flags, fflags, data, udata);
-	std::cout << "setevent : " << temp_event.ident << std::endl;
+	std::cout << "setevent : " << temp_event.ident << " size :  " << this->_changeVec.size() << std::endl;
 	this->_changeVec.push_back(temp_event);
+}
+
+void KqueueManage::delEvent(int fd) {
+	std::vector<struct kevent>::iterator bit = this->_changeVec.begin();
+	for (std::vector<struct kevent>::iterator i = bit ; i !=  this->_changeVec.end() ; ++i) {
+		if ((*i).ident == fd) {
+			EV_SET(&(*i), fd, EVFILT_READ, EV_DELETE | EV_ENABLE , 0, 0, NULL);
+			EV_SET(&(*i), fd, EVFILT_WRITE, EV_DELETE | EV_ENABLE, 0, 0, NULL);
+			this->_changeVec.erase(i);
+			 --i;
+		}
+	}
+	std::cout << "호출 " <<  std::endl;
+	::close(fd);
+	std::cout << "호웇 이후 " << std::endl;
+	//	KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+
 }
 
 void KqueueManage::kevent() {
@@ -92,7 +109,8 @@ void KqueueManage::create(FileDescriptor& fd, RWCallback& callback, int opt) {
 
 	//addToSets(fd.raw(), operations);
 
-	this->_callbackMap[raw] = &callback;
+	//this->_callbackMap[raw] = &callback;
+
 	//this->_callbackMap[raw]->recv()
 	// m_fileDescriptors[raw] = &fd;
 	

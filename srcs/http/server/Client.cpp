@@ -4,60 +4,52 @@ int Client::_s_connCnt = 0;
 
 
 Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
-	: _inetAddress(inetAddress), _server(server), _socket(socket) {
+	: _inetAddress(inetAddress), _server(server), _socket(socket), _in(this->_socket), _out(this->_socket) {
 	Client::_s_connCnt++;
 }
 
 Client::~Client(void) {
 	Client::_s_connCnt--;
+	// delete &this->_in;
+	// delete &this->_out;
+	this->_server.disconnect(*this);
+	// delete &this->_socket;
 }
 
 Socket& Client::socket() const {
 	return (this->_socket);
 }
 
+// recv 0 == client에서 접속종료
 bool Client::recv(FileDescriptor &fd) {
-	// (void)fd;
-	char buf[33333]; // std::string::npos too large size
-	std::cout<< "client:recv" << std::endl;
-	if (static_cast<Socket&>(fd).recv(buf, 100000) <= 0)
-	{
+	(void)fd;
+	if (this->_in.recv() <= 0) {
 		delete this;
-		return (true);
+		return (false);
 	}
 	return (true);
 }
 
-// bool send(FileDescriptor& fd) {
-// 	// if (!m_response.ended())
-// 		// return (false);
+bool Client::send(FileDescriptor& fd) {
+	
+	// response 종료 체크
+	// m_out size 체크
 
-// 	// bool finished = m_response.store(m_out);
-
-// 	// size_t sizeBefore = m_out.size();
-//     ssize_t r = 0;
-// 	// // r = static_cast<Socket&>(fd).send(m_storage.data(), std::min(m_storage.length(), len), flags);
-
-// 	// if (r > 0)
-// 	// 	m_storage.erase(0, r);
-
-//     // if ((r = static_cast<Socket&>(fd).send()) > 0)
-// 	// 	std::cout << "success send" << std::endl;
-//         //updateLastAction();
-
-//     // if ((sizeBefore != 0 && r == 0) || r == -1)
-//         // delete this;
-//     // else if (finished && m_out.empty())
-
-// 	// {
-// 	// 	if (m_keepAlive)
-// 	// 	{
-// 	// 		log();
-// 	// 		reset();
-// 	// 	}
-// 	// 	else
-// 	// 		delete this;
-// 	// }
-
-// 	return (false);
-// }
+	(void)fd;
+	std::cout<< "send in in ini " << std::endl;
+	std::cout << this->_in.size() << std::endl;
+	if (this->_in.size() == 0)
+		return (false);
+		else
+		std::cout << "notnull in " << std::endl;
+    ssize_t ret = 0;
+	// request, response 로직에서 생서한 응답버퍼 _out 를 send해야 함.
+    // if ((ret = this->_out.send()) > 0)
+    // if ((ret = this->_in.send()) > 0)
+		//std::cout << "out ret : " << ret << std::endl;
+ 		// 시간 체크
+	ret = this->_in.send();
+	if (ret == -1)
+		delete this;
+	return (true);
+}
