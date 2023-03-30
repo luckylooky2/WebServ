@@ -8,7 +8,7 @@
 // #include "../request/Request.hpp"
 // #include "../response/Response.hpp"
 #include "RWCallback.hpp"
-
+#include "SocketStorage.hpp"
 
 class Server;
 /**
@@ -21,10 +21,12 @@ class Client : public RWCallback {
 public:
 	static int _s_connCnt;
 private:
-	InetAddress	_inetAddress;
-	Server&		_server;
-	Socket&		_socket;
-	std::string _body;
+	InetAddress		_inetAddress;
+	Server&			_server;
+	Socket&			_socket;
+	std::string 	_body;
+	SocketStorage 	_in;
+	SocketStorage 	_out;
 	//State m_state;
 	//unsigned long _lastDoTime;
 	//RequestParser _parser;
@@ -40,7 +42,7 @@ public:
 	Client(InetAddress inetAddress, Server& server, Socket& socket);
 	Socket& socket() const;
 	bool recv(FileDescriptor& fd);
-	// bool send(FileDescriptor& fd);
+	bool send(FileDescriptor& fd);
 };
 
 #endif

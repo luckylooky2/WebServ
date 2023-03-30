@@ -46,21 +46,24 @@ Socket* Socket::accept() {
 	return (new Socket(fd));
 }
 
-ssize_t Socket::recv(void *buffer, size_t length, int flags) {
+ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
 	std::cout << "socket:recv : " << this->getFd() << std::endl;
 	this->validateNotClosed();
 	ssize_t ret;
 	if ((ret = ::recv(this->getFd(), buffer, length, flags)) == -1)
 		throw IOException("recv error! : ", errno);
-	
 	return (ret);
 }
 
 ssize_t Socket::send(const void *buffer, size_t length, int flags) {
 	this->validateNotClosed();
 	ssize_t ret;
-	if ((ret = ::send(this->getFd(), buffer, length, flags)) == -1)
+	std::cout << "send data : " << static_cast<const char *>(buffer) << std::endl;
+	
+		std::string s = std::string(static_cast<const char*>(buffer));
+	if ((ret = ::send(this->getFd(), buffer, s.size(), flags)) == -1)
 		throw IOException("send error : ", errno);
+	std::cout << "send ret : " << ret << std::endl;
 	return (ret);
 }
 

@@ -31,11 +31,6 @@ void Server::close(void) {
 	this->_socket->close();
 }
 
-void Server::disconnect(Client& client) {
-	// this->_clients.erase(client.);
-	// this->_clients.remove(&client);
-}
-
 std::map<int, Client*> Server::clients() {
 	return (this->_clients);
 }
@@ -58,6 +53,12 @@ Socket* Server::connect(Socket* serverSocket) {
 
 	return (socket);
 }
+
+void Server::disconnect(Client& client) {
+	std::cout << "disconnect " << std::endl;
+	this->_clients.clear();
+}
+
 
 bool Server::recv(FileDescriptor &fd) {
 	std::cout << "accete fd : " << fd.getFd() << std::endl;
