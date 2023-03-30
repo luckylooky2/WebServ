@@ -2,15 +2,15 @@
 #define REQUESTSTRING_HPP
 
 #include <string>
-#include "../../util/split.hpp"
 #include "../../exception/IllegalStateException.hpp"
+#include "RequestParser.hpp"
 
 #define SP		' '
 #define CRLF	"\r\n"
 
 /**
- * @brief JSON 형식의 request 메시지를 부분별로 저장
- * @details request 메시지의 시작줄, 헤더, 본문을 각각 string으로 저장
+ * @brief 파싱되지 않은 HTTP 요청 메시지 string을 저장
+ * @details full string, 부분별 string을 각각 저장
  * @author chanhyle
  * @date 2023.03.24
  */

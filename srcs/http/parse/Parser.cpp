@@ -1,7 +1,6 @@
-#include "split.hpp"
-#include <iostream>
+#include "Parser.hpp"
 
-std::vector<std::string>	split(std::string str, std::string delim)
+std::vector<std::string>	Parser::split(std::string str, std::string delim)
 {
     std::vector<std::string>	tokens;
     size_t						pos = 0;
@@ -18,7 +17,7 @@ std::vector<std::string>	split(std::string str, std::string delim)
     return tokens;
 }
 
-std::vector<std::string>	split(std::string str, char delim)
+std::vector<std::string>	Parser::split(std::string str, char delim)
 {
     std::vector<std::string>	tokens;
     size_t						pos = 0;
@@ -33,4 +32,21 @@ std::vector<std::string>	split(std::string str, char delim)
     if (str != "")
         tokens.push_back(str);
     return tokens;
+}
+
+void	Parser::trim(std::string& str)
+{
+    // Trim leading spaces
+    std::string::iterator it = str.begin();
+    while (it != str.end() && std::isspace(*it)) {
+        ++it;
+    }
+    str.erase(str.begin(), it);
+
+    // Trim trailing spaces
+    it = str.end();
+    while (it != str.begin() && std::isspace(*(it - 1))) {
+        --it;
+    }
+    str.erase(it, str.end());
 }

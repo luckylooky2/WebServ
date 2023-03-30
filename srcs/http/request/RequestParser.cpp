@@ -1,25 +1,12 @@
 #include "RequestParser.hpp"
 #include "../../exception/IllegalStateException.hpp"
-#include <iostream>
-
-/*
-	OCCF
-*/
-
-RequestParser::RequestParser() {}
-
-RequestParser::RequestParser(const RequestParser& __copy) {}
-
-RequestParser	RequestParser::operator=(const RequestParser& __copy) { return (*this); }
-
-RequestParser::~RequestParser() {}
 
 /*
 	Member functions
 */
 
 // 구현한 것보다 더 긴 메서드를 수신한 서버는 501(Not Implemented)상태 코드 로 응답해야 한다.(SHOULD)
-s_method	setMethod(std::string __method)
+static s_method	setMethod(std::string __method)
 {
 	if (__method == "GET") return GET;
 	else if (__method == "POST") return POST;
@@ -29,7 +16,7 @@ s_method	setMethod(std::string __method)
 }
 
 // 현재 나와있는 version에만 유효해야 하는가?
-float	setVersion(std::string __version)
+static float	setVersion(std::string __version)
 {
 	size_t	index;
 	size_t	major;
@@ -59,7 +46,7 @@ RequestLine	RequestParser::parseRequestLine(std::string __requestLineString)
 	RequestLine					requestLine;
 	std::vector<std::string>	sp_splited;
 
-	sp_splited = split(__requestLineString, SP);
+	sp_splited = RequestParser::split(__requestLineString, SP);
 	requestLine._method = setMethod(sp_splited[0]);
 	// 구문 분석할 URI보다 긴 요청 대상을 수신한 서버는 414(URI Too Long) 상태 코드로 응답해야 합니다.
 	requestLine._uri = sp_splited[1];
@@ -73,7 +60,7 @@ Headers		RequestParser::parseHeaders(std::string __headersString)
 	std::vector<std::string>			crlf_splited;
 
 	// 같은 헤더가 여러 개일 수도 있음
-	crlf_splited = split(__headersString, CRLF);
+	crlf_splited = RequestParser::split(__headersString, CRLF);
 	for (size_t i = 0; i < crlf_splited.size(); i++)
 	{
 		std::string		fieldName;

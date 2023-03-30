@@ -1,10 +1,15 @@
 #ifndef HEADERS_HPP
 #define HEADERS_HPP
-
 #include <map>
 #include <string>
 #include <vector>
 
+/**
+ * @brief HTTP 요청 메시지 중 헤더를 저장
+ * @details 필드 이름 별로 필드 값을 중복하여 저장
+ * @author chanhyle
+ * @date 2023.03.29
+ */
 struct Headers {
 public:
 	typedef std::map<std::string, std::vector<std::string> >	header_table;

@@ -4,23 +4,19 @@
 #include <cstdlib>
 #include "RequestLine.hpp"
 #include "Headers.hpp"
-#include "../../util/split.hpp"
-#include "../../util/trim.hpp"
+#include "../parse/Parser.hpp"
 #include "../../exception/IllegalStateException.hpp"
 
-#define SP		' '
-#define CRLF	"\r\n"
-
-class RequestParser {
+/**
+ * @brief HTTP 요청 메시지 각 부분을 파싱하는 Derived class
+ * @details request line, headers를 의미에 따라 파싱
+ * @author chanhyle
+ * @date 2023.03.29
+ */
+class RequestParser : public Parser {
 public:
-	RequestParser();
-	RequestParser(const RequestParser& __copy);
-	RequestParser	operator=(const RequestParser& __copy);
-	~RequestParser();
-	
-	RequestLine	parseRequestLine(std::string __requestLineString);
-	Headers		parseHeaders(std::string __headersString);
-
+	static RequestLine	parseRequestLine(std::string __requestLineString);
+	static Headers		parseHeaders(std::string __headersString);
 };
 
 #endif

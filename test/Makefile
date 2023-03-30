@@ -8,15 +8,14 @@ SRCS 		=  ../srcs/log/LogFactory.cpp ../srcs/log/Logger.cpp \
 			   units/unit_libft_is.cpp \
 			   units/unit_log.cpp \
 			   units/unit_request.cpp \
+			   ../srcs/http/parse/Parser.cpp \
 			   ../srcs/http/request/Request.cpp \
 			   ../srcs/http/request/RequestString.cpp \
 			   ../srcs/http/request/RequestParser.cpp \
 			   ../srcs/http/request/Headers.cpp \
 			   ../srcs/exception/IllegalStateException.cpp \
 			   ../srcs/exception/RuntimeException.cpp \
-			   ../srcs/exception/Exception.cpp \
-			   ../srcs/util/split.cpp \
-			   ../srcs/util/trim.cpp
+			   ../srcs/exception/Exception.cpp 
 
 OBJS 		= $(SRCS:.cpp=.o)
 .c.o :
