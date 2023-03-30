@@ -5,7 +5,7 @@
 
 class SHTTP {
 public:
-	static const std::string SP;
+	static const char				 SP;
 	static const std::string CRLF;
 };
 
