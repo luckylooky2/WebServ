@@ -3,7 +3,7 @@
 #include "RequestString.hpp"
 #include "RequestParser.hpp"
 #include "RequestLine.hpp"
-#include "Headers.hpp"
+#include "RequestHeaders.hpp"
 
 /**
  * @brief HTTP 요청 메시지 string을 파싱하여 저장
@@ -14,7 +14,7 @@
 class Request {
 
 public:
-	typedef std::map<std::string, std::vector<std::string> >	headers_map;
+	typedef std::map<std::string, std::vector<std::string> >	headers_table;
 
 public:
 	Request();
@@ -26,21 +26,21 @@ public:
 	
 	RequestString	getReqString();
 	RequestLine		getRequestLine();
-	Headers			getHeaders();
+	RequestHeaders	getHeaders();
 
 	e_method		method();
 	std::string		uri();
 	float			version();
-	headers_map		headers();
+	headers_table	headers();
 	std::string		body();
-	size_t			headerCount();
+	size_t			header_count();
 
 private:
 	RequestString			_reqString;
-	static RequestParser	_parser; // singleton 적용하는 방법
 	RequestLine				_requestLine;
-	Headers					_headers;
+	RequestHeaders			_headers;
 	std::string				_body;
+	bool					_isChunked;
 };
 
 #endif
