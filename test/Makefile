@@ -12,7 +12,7 @@ SRCS 		=  ../srcs/log/LogFactory.cpp ../srcs/log/Logger.cpp \
 			   ../srcs/http/request/Request.cpp \
 			   ../srcs/http/request/RequestString.cpp \
 			   ../srcs/http/request/RequestParser.cpp \
-			   ../srcs/http/request/Headers.cpp \
+			   ../srcs/http/request/RequestHeaders.cpp \
 			   ../srcs/exception/IllegalStateException.cpp \
 			   ../srcs/exception/RuntimeException.cpp \
 			   ../srcs/exception/Exception.cpp 
