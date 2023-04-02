@@ -30,14 +30,14 @@ static float	setVersion(std::string __version)
 		throw IllegalStateException("HTTP Request start line invalid version.");
 	index += 5;
 	major_index = index;
-	major = ::strtol(&__version.at(index), &major_end, 10);
-	if (*major_end != '.' || &__version.at(index) == major_end)
+	major = ::strtol(&__version.c_str()[index], &major_end, 10);
+	if (*major_end != '.' || &__version.c_str()[index] == major_end)
 		throw IllegalStateException("HTTP Request start line invalid version.");
-	index += major_end - &__version.at(index) + 1;
-	minor = ::strtol(&__version.at(index), &minor_end, 10);
-	if (*minor_end != '\r' || &__version.at(index) == minor_end)
+	index += major_end - &__version.c_str()[index] + 1;
+	minor = ::strtol(&__version.c_str()[index], &minor_end, 10);
+	if (*minor_end != '\r' || &__version.c_str()[index] == minor_end)
 		throw IllegalStateException("HTTP Request start line invalid version.");
-	return (::strtod(&__version.at(major_index), &major_end));
+	return (::strtod(&__version.c_str()[major_index], &major_end));
 }
 
 // 최소 8000 octet 길이의 request-line을, 지원하는 것을 권장한 다.(RECOMMENDED)
@@ -54,10 +54,10 @@ RequestLine	RequestParser::parseRequestLine(std::string __requestLineString)
 	return (requestLine);
 }
 
-Headers		RequestParser::parseHeaders(std::string __headersString)
+RequestHeaders		RequestParser::parseHeaders(std::string __headersString)
 {
-	Headers								headers;
-	std::vector<std::string>			crlf_splited;
+	RequestHeaders				headers;
+	std::vector<std::string>	crlf_splited;
 
 	// 같은 헤더가 여러 개일 수도 있음
 	crlf_splited = RequestParser::split(__headersString, CRLF);
@@ -69,20 +69,19 @@ Headers		RequestParser::parseHeaders(std::string __headersString)
 
 		// 1. 문법 검증
 		// 2. name, value split => 첫번째 :를 찾아서 2개로 나누면 될 듯
-		index = crlf_splited[i].find(':');
+		index = crlf_splited[i].find(':'); // obs-fold 검증 필요? message/http 미디어 타입 제외
 		if (index == std::string::npos)
 			throw IllegalStateException("HTTP Request header field colon error.");
 		fieldName = crlf_splited[i].substr(0, index);
 		if (fieldName.find(SP) != std::string::npos)
-			throw IllegalStateException("HTTP Request headers field name SP error.");
+			throw IllegalStateException("HTTP Request headers field name SP error."); // 400(Bad Request)
 		// OWS => SP만 인지 확인하기
 		fieldValue = crlf_splited[i].substr(index + 1, crlf_splited[i].size());
-		if (fieldValue[0] == SP)
+		if (fieldValue[0] == SP || fieldValue[0] == HTAB)
 			fieldValue.erase(0, 1);
-		if (fieldValue[fieldValue.size() - 1] == SP)
+		if (fieldValue[fieldValue.size() - 1] == SP || fieldValue[fieldValue.size() - 1] == HTAB)
 			fieldValue.erase(fieldValue.size() - 1, 1);
-		if (fieldValue.find(SP) != std::string::npos)
-			throw IllegalStateException("HTTP Request headers field value SP error.");
+		// field-content 검증 필요
 		// 3. key가 있으면 value에 push_back(), 없으면 key, value를 insert()
 		if (headers.keyExist(fieldName))
 			headers.addFieldValue(fieldName, fieldValue);
@@ -90,4 +89,19 @@ Headers		RequestParser::parseHeaders(std::string __headersString)
 			headers.insertHeader(fieldName, fieldValue);
 	}
 	return (headers);
+}
+
+std::string		RequestParser::parseBody(std::string __bodyString)
+{
+	std::string					result;
+	std::vector<std::string>	crlf_splited;
+	int							i = 0;
+
+	crlf_splited = RequestParser::split(__bodyString, CRLF);
+	while (crlf_splited[i] != "0")
+	{
+		result.append(crlf_splited[i + 1]);
+		i += 2;
+	}
+	return (result);
 }
