@@ -1,8 +1,9 @@
-#ifndef HEADERS_HPP
-#define HEADERS_HPP
+#ifndef REQUESTHEADERS_HPP
+#define REQUESTHEADERS_HPP
 #include <map>
 #include <string>
 #include <vector>
+#include "RequestParser.hpp"
 
 /**
  * @brief HTTP 요청 메시지 중 헤더를 저장
@@ -10,15 +11,15 @@
  * @author chanhyle
  * @date 2023.03.29
  */
-struct Headers {
+struct RequestHeaders {
 public:
 	typedef std::map<std::string, std::vector<std::string> >	header_table;
 
 public:
-	Headers();
-	~Headers();
-	Headers(const Headers& __copy);
-	Headers	operator=(const Headers& __copy);
+	RequestHeaders();
+	~RequestHeaders();
+	RequestHeaders(const RequestHeaders& __copy);
+	RequestHeaders	operator=(const RequestHeaders& __copy);
 	
 	bool	keyExist(std::string __key);
 	void	insertHeader(std::string __fieldName, std::string __fieldValue);
@@ -26,7 +27,7 @@ public:
 
 public:
 	header_table	_headers;
-	size_t			_header_count;
+	size_t			_headerCount;
 };
 
 #endif
