@@ -5,6 +5,7 @@
 
 #define SP		' '
 #define CRLF	"\r\n"
+#define HTAB	'\t'
 
 /**
  * @brief Parser Base class
@@ -17,6 +18,7 @@ public :
 	static std::vector<std::string>		split(std::string str, std::string delim);
 	static std::vector<std::string>		split(std::string str, char delim);
 	static void							trim(std::string& str);
+	static std::string					toupper(std::string str);
 };
 
 #endif

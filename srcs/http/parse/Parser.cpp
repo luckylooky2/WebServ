@@ -50,3 +50,17 @@ void	Parser::trim(std::string& str)
     }
     str.erase(it, str.end());
 }
+
+std::string Parser::toupper(std::string str)
+{
+    std::string result;
+
+    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+    {
+        if ('a' <= *it && *it <= 'z')
+            result += char(*it - 'a' + 'A');
+        else
+            result += *it;
+    }
+    return result;
+}
