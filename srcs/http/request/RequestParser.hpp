@@ -3,9 +3,11 @@
 #include <string>
 #include <cstdlib>
 #include "RequestLine.hpp"
-#include "Headers.hpp"
+#include "RequestHeaders.hpp"
 #include "../parse/Parser.hpp"
 #include "../../exception/IllegalStateException.hpp"
+
+class RequestHeaders;
 
 /**
  * @brief HTTP 요청 메시지 각 부분을 파싱하는 Derived class
@@ -15,8 +17,9 @@
  */
 class RequestParser : public Parser {
 public:
-	static RequestLine	parseRequestLine(std::string __requestLineString);
-	static Headers		parseHeaders(std::string __headersString);
+	static RequestLine		parseRequestLine(std::string __requestLineString);
+	static RequestHeaders	parseHeaders(std::string __headersString);
+	static std::string		parseBody(std::string __bodyString);
 };
 
 #endif

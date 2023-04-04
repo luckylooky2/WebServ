@@ -1,5 +1,7 @@
 #include "Request.hpp"
 
+typedef std::map<std::string, std::vector<std::string> >	headers_table;
+
 /* 
 	OCCF
 */
@@ -37,15 +39,20 @@ Request::Request(std::string __reqString)
 {
 	_requestLine = RequestParser::parseRequestLine(_reqString.getRequestLine());
 	_headers = RequestParser::parseHeaders(_reqString.getHeaders());
-	_body = _reqString.getBody();
+	if (_headers._headers["Transfer-Encoding"].size() == 0)
+		_isChunked = false;
+	else
+		_isChunked = _headers._headers["Transfer-Encoding"][0] == "chunked";
+	_body = _isChunked ? RequestParser::parseBody(_reqString.getBody()) : _reqString.getBody();
 }
+
 RequestString	Request::getReqString() { return (_reqString); }
 RequestLine		Request::getRequestLine() { return (_requestLine); }
-Headers			Request::getHeaders() { return (_headers); }
+RequestHeaders	Request::getHeaders() { return (_headers); }
 
 e_method		Request::method() { return (_requestLine._method); }
 std::string		Request::uri() { return (_requestLine._uri); }
 float			Request::version() { return (_requestLine._version); }
-std::map<std::string, std::vector<std::string> >		Request::headers() { return (_headers._headers); }
+headers_table	Request::headers() { return (_headers._headers); }
 std::string		Request::body() { return (_body); }
-size_t			Request::headerCount() { return (_headers._header_count); }
+size_t			Request::header_count() { return (_headers._headerCount); }
