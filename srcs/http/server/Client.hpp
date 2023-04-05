@@ -5,10 +5,13 @@
 #include "../../file/FileDescriptor.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
-// #include "../request/Request.hpp"
-// #include "../response/Response.hpp"
 #include "RWCallback.hpp"
 #include "SocketStorage.hpp"
+#include "../request/Request.hpp"
+#include "../response/Response.hpp"
+#include "../response/HTTPState.hpp"
+#include "../response/make/ResponseMaker.hpp"
+#include "../../exception/Exception.hpp"
 
 class Server;
 /**
@@ -17,9 +20,15 @@ class Server;
  * @author seongtki
  * @date 2023.03.26
  */
+
+// class ResponseMaker;
+class Response;
+class Request;
+
 class Client : public RWCallback {
 public:
-	static int _s_connCnt;
+	static int	_s_connCnt;
+	enum { HEADER, BODY, END };
 private:
 	InetAddress		_inetAddress;
 	Server&			_server;
@@ -30,19 +39,25 @@ private:
 	//State m_state;
 	//unsigned long _lastDoTime;
 	//RequestParser _parser;
-	//Request _request;
-	// Response _response;
-	bool _keepAlive;
+	Request			_req;
+	Response 		_res;
+	ResponseMaker	_maker;
+	bool 			_keepAlive;
+	int				_currProgress;
 
-	Client& operator=(const Client& other);
 	Client(void);
-	Client(const Client& other); // myMap.insert(std::make_pair("moon", 2)); 에서 필요함
+	Client& operator=(const Client& other);
 public:
-	~Client(void);
+	Client(const Client& other); // myMap.insert(std::make_pair("moon", 2)); 에서 필요함
+	virtual ~Client(void);
 	Client(InetAddress inetAddress, Server& server, Socket& socket);
 	Socket& socket() const;
 	bool recv(FileDescriptor& fd);
 	bool send(FileDescriptor& fd);
+
+	bool progress(void);
+	bool progressHead(void);
+	bool progressBody(void);
 };
 
 #endif
