@@ -55,32 +55,6 @@ ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
 	return (ret);
 }
 
-std::string sample() {
-std::string str;
-// str.append("GET / HTTP/1.1");
-// str.append("\nUser-Agent: test");
-// str.append("\nAccept: */*");
-// str.append("\nHost: localhost:8080");
-// str.append("\nAccept-Encoding: gzip, deflate, br");
-// str.append("\nConnection: keep-alive");
- 
-str.append("\nHTTP/1.1 200 OK");
-str.append("\nContent-Length: 70");
-str.append("\nContent-Type: text/html");
-str.append("\nDate: Thu, 30 Mar 2023 19:00:10 GMT");
-str.append("\nServer: webserv\r\n\r\n");
- 
-str.append("<html>");
-str.append("<head>");
-str.append("<title>Listing of /</title>");
-str.append("</head>");
-str.append("<body>");
-str.append("test");
-str.append("</body>");
-str.append("</html>");
-//std::cout << "str size : " << str.length() << std::endl;
-return str;
-}
 
 ssize_t Socket::send(const void *buffer, size_t length, int flags) {
 	this->validateNotClosed();
@@ -89,10 +63,10 @@ ssize_t Socket::send(const void *buffer, size_t length, int flags) {
 	
 	std::string s = std::string(static_cast<const char*>(buffer));
 
-	std::string tmps = sample();
-	const char* tmp = tmps.c_str();
-	if ((ret = ::send(this->getFd(), tmp, tmps.size(), flags)) == -1)
-	// if ((ret = ::send(this->getFd(), buffer, s.size(), flags)) == -1)
+	// std::string tmps = sample();
+	// const char* tmp = tmps.c_str();
+	// if ((ret = ::send(this->getFd(), tmp, tmps.size(), flags)) == -1)
+	if ((ret = ::send(this->getFd(), buffer, s.size(), flags)) == -1)
 		throw IOException("send error : ", errno);
 	std::cout << "send ret : " << ret << std::endl;
 	return (ret);

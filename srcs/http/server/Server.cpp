@@ -48,9 +48,6 @@ Socket* Server::connect(Socket* serverSocket) {
 	this->_clients.insert(std::make_pair(socket->getFd(), &client));
 	// this->_clients.push_back(&client);
 
-	// if (HTTPClient::INSTANCE_COUNT > Configuration::instance().rootBlock().maxActiveClient().orElse(RootBlock::DEFAULT_MAX_ACTIVE_CLIENT))
-		// HTTPClient::setUnavailable(httpClient);
-
 	return (socket);
 }
 

@@ -38,7 +38,6 @@ public:
 	std::string getHost() const;
 	int getPort() const;
 	std::list<ServerBlock *> getServerBlocks() const;
-		// readable(FileDescriptor &fd);	
 	void close();
 	Socket* connect(Socket* serverSocket);
 	void disconnect(Client& client);
