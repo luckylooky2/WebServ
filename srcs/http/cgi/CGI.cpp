@@ -53,7 +53,7 @@ CGI::CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out, File& file) :
 
 CGI::~CGI(void) {
 	std::cout << "CGI::~CGI : " << std::endl; 
-	// _file.remove();
+	_file.remove();
 	delete &_in;
 	delete &_out;
 	kill();
