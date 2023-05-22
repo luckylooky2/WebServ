@@ -1,4 +1,5 @@
 #include "Get.hpp"
+#include "../../../util/Time.hpp"
 
 Get::Get(void) {}
 
@@ -7,9 +8,9 @@ Get::~Get(void) {}
 
 #include "../../../file/File.hpp"
 #include <list>
-std::string sampleListing(File file)
-{
-	const std::string &directory = file.path();
+
+std::string Get::listing(const URL& url, const File& file) {
+	const std::string &directory = url.path();
 
 	std::string out = ""
 			"<html>\n"
@@ -19,16 +20,17 @@ std::string sampleListing(File file)
 			"	<body>\n";
 
 	std::list<File> files = file.list();
-	for (std::list<File>::iterator it = files.begin(); it != files.end(); it++)
-	{
+	for (std::list<File>::iterator it = files.begin(); it != files.end(); it++) {
 		std::string name(it->name());
+
 		if (it->isDir())
 			name += '/';
-		std::string path(file.path());
-		if (path.empty())
+
+		std::string path(url.path());
+		if (path.empty() || path.c_str()[path.length() - 1] != '/')
 			path += '/';
 		path += name;
-		out += std::string("<a href=\"") + path + "\">" + name + "</a><br>\n";
+		out += std::string("		<a href=\"") + path + "\">" + name + "</a><br>\n";
 	}
 
 	out += ""
@@ -38,42 +40,72 @@ std::string sampleListing(File file)
 	return (out);
 }
 
-std::string sample() {
-std::string str;
-// str.append("GET / HTTP/1.1");
-// str.append("\nUser-Agent: test");
-// str.append("\nAccept: */*");
-// str.append("\nHost: localhost:8080");
-// str.append("\nAccept-Encoding: gzip, deflate, br");
-// str.append("\nConnection: keep-alive");
- 
-str.append("\nHTTP/1.1 200 OK");
+#include "../../../util/Storage.hpp"
+#include "../../../util/Time.hpp"
+#include "../../../config/Mime.hpp"
+#include "../../../config/Config.hpp"
+#include "../../../util/ReleaseResource.hpp"
+#include "../ResponseByFile.hpp"
 
-str.append("\nContent-Length: 1092");
-str.append("\nContent-Type: text/html");
-str.append("\nDate: Thu, 30 Mar 2023 19:00:10 GMT");
-str.append("\nServer: webserv\r\n\r\n");
+bool Get::doMethod(Request &req, Response &res, Client &cli) {
 
+	File targetFile(req.targetFile());
+	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;
+	std::cout << targetFile.path() << std::endl;
 
-File f("./");
-str.append(sampleListing(f));
-// str.append("<html>");
-// str.append("<head>");
-// str.append("<title>Listing of /</title>");
-// str.append("</head>");
-// str.append("<body>");
-// str.append("test");
-// str.append("</body>");
-// str.append("</html>");
-std::cout << str << std::endl;
+	if (res.body()) {
+		return (true);
+	}
+	
+	if (!targetFile.exists()) {
+		res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+		return (true);
+	}
 
-// std::cout << "str size : " << str.length() << std::endl;
-return str;
-}
+	if (targetFile.isFile()) {
+		std::size_t contentLength = targetFile.size();
+		Time lastupdate(targetFile.stat().st_mtimespec);
+		Mime::MimeType contentType;
 
-void Get::doMethod(Request &req, Response &res, Client &cli) {
-	std::string ret = sample();
-	res.store(ret);
+		std::string extension;
+		
+		std::cout << req.url().fullUrl() << std::endl;
+		if (req.url().extension(extension)) {
+			contentType = Config::instance().mime()->mimeMap()[extension];
+		}
+		std::cout << "extension : " << extension << std::endl;
+		std::cout << "contentType : " << contentType.front() << std::endl;
+
+		FileDescriptor *fd = NULL;
+		try {
+			fd = targetFile.open(O_RDONLY, 0666);
+			res.body(new ResponseByFile(*fd, contentLength));
+			res.header().contentLength(contentLength);
+			// res.header().contentType(contentType);
+			res.header().lastModified(lastupdate.formatTimeSpec(SHTTP::DATEFORMAT));
+			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+		}
+		catch (...) {
+			ReleaseResource::pointer<FileDescriptor>(fd);
+			throw;
+		}
+		return (true);
+	}
+
+	if (targetFile.isDir()) {
+		// if (!request.listing())
+			// res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+		// else {
+			res.body(listing(req.url(), targetFile));
+			// res.string(listing(request.url(), targetFile)); 
+			// res.headers().html(); // MIME_HTML = "text/html"; mime setting 
+			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+		// }
+		return (true);
+	}
+	res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+	// cli.end();
+	return (true);
 }
 
 void Get::setHasBody(bool hasbody) {

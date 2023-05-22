@@ -55,8 +55,10 @@ private:
 		// state[HTTPStatus::UNAUTHORIZED] = "Unauthorized";
 		// state[HTTPStatus::PAYMENT_REQUIRED] = "Payment Required";
 		// state[HTTPStatus::FORBIDDEN] = "Forbidden";
-		// state[HTTPStatus::NOT_FOUND] = "Not Found";
-		// state[HTTPStatus::METHOD_NOT_ALLOWED] = "Method Not Allowed";
+		state[HTTPStatus::NOT_FOUND].first = HTTPStatus::NOT_FOUND;
+		state[HTTPStatus::NOT_FOUND].second = "Not Found";
+		state[HTTPStatus::METHOD_NOT_ALLOWED].first = HTTPStatus::METHOD_NOT_ALLOWED;
+		state[HTTPStatus::METHOD_NOT_ALLOWED].second = "Method Not Allowed";
 		// state[HTTPStatus::NOT_ACCEPTABLE] = "Not Acceptable";
 		// state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED] = "Proxy Authentication Required";
 		// state[HTTPStatus::REQUEST_TIMEOUT] = "Request Timeout";
@@ -88,7 +90,8 @@ private:
 		state[HTTPStatus::INTERNAL_SERVER_ERROR].second = "Internal Server Error";
 		// state[HTTPStatus::NOT_IMPLEMENTED] = "Not Implemented";
 		// state[HTTPStatus::BAD_GATEWAY] = "Bad Gateway";
-		// state[HTTPStatus::SERVICE_UNAVAILABLE] = "Service Unavailable";
+		state[HTTPStatus::SERVICE_UNAVAILABLE].first = HTTPStatus::SERVICE_UNAVAILABLE;
+		state[HTTPStatus::SERVICE_UNAVAILABLE].second = "Service Unavailable";
 		// state[HTTPStatus::GATEWAY_TIMEOUT] = "Gateway Timeout";
 		// state[HTTPStatus::HTTP_VERSION_NOT_SUPPORTED] = "HTTP Version not supported";
 		// state[HTTPStatus::VARIANT_ALSO_NEGOTIATES] = "Variant Also Negotiates";
@@ -175,10 +178,6 @@ public:
 		BANDWIDTH_LIMIT_EXCEEDED			=509,
 		NOT_EXTENDED						=510,
 	};
-
-	// std::pair<int, std::string>& operator[](const int& k) {
-	// 	return (HTTPStatus::STATE[k]);
-	// }
 };
 
 #endif

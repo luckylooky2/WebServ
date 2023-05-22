@@ -27,8 +27,7 @@ void exit_with_perror(const string& msg)
 }
 
 void change_events(vector<struct kevent>& change_list, uintptr_t ident, int16_t filter,
-        uint16_t flags, uint32_t fflags, intptr_t data, void *udata)
-{
+        uint16_t flags, uint32_t fflags, intptr_t data, void *udata) {
     struct kevent temp_event;
 
     EV_SET(&temp_event, ident, filter, flags, fflags, data, udata);
@@ -51,19 +50,11 @@ KqueueManage::KqueueManage(void) {
 
 KqueueManage::~KqueueManage(void) {}
 
-// struct kevent64_s {
-// 	uint64_t        ident;          /* identifier for this event */
-// 	int16_t         filter;         /* filter for event */
-// 	uint16_t        flags;          /* general flags */
-// 	uint32_t        fflags;         /* filter-specific flags */
-// 	int64_t         data;           /* filter-specific data */
-// 	uint64_t        udata;          /* opaque user data identifier */
-// 	uint64_t        ext[2];         /* filter-specific extensions */
-// };
+
 void KqueueManage::setEvent(uintptr_t ident, int16_t filter, uint16_t flags, uint32_t fflags, intptr_t data, void *udata) {
  	struct kevent temp_event;
 	EV_SET(&temp_event, ident, filter, flags, fflags, data, udata);
-	std::cout << "setevent : " << temp_event.ident << " size :  " << this->_changeVec.size() << std::endl;
+	// std::cout << "setevent : " << temp_event.ident << " size :  " << this->_changeVec.size() << std::endl;
 	this->_changeVec.push_back(temp_event);
 }
 
@@ -73,22 +64,24 @@ void KqueueManage::delEvent(int fd) {
 		if ((*i).ident == fd) {
 			EV_SET(&(*i), fd, EVFILT_READ, EV_DELETE | EV_ENABLE , 0, 0, NULL);
 			EV_SET(&(*i), fd, EVFILT_WRITE, EV_DELETE | EV_ENABLE, 0, 0, NULL);
+			std::cout << "delEvent : " << fd <<  std::endl;
+
 			this->_changeVec.erase(i);
 			 --i;
 		}
 	}
-	std::cout << "호출 " <<  std::endl;
 	::close(fd);
-	std::cout << "호웇 이후 " << std::endl;
-	//	KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-
+	this->_callbackMap.erase(fd);
+	this->_fdMap.erase(fd);
 }
 
 void KqueueManage::kevent() {
+	struct timespec myTime  = {1, 0};
+	
 	this->_eventCount = ::kevent(this->_kqueueFd, &this->_changeVec[0]
-							, this->_changeVec.size() , this->_eventArr, 8, NULL);
-	if (this->_eventCount == -1)
-		throw IOException("kevent() error : ", errno);
+							, this->_changeVec.size() , this->_eventArr, 300, &myTime);
+	// if (this->_eventCount == -1)
+		// throw IOException("kevent() error : ", errno);
 }
 
 int KqueueManage::eventCount(void) const {
@@ -104,18 +97,27 @@ struct kevent* KqueueManage::eventArr() {
 	return (this->_eventArr);
 }
 
-void KqueueManage::create(FileDescriptor& fd, RWCallback& callback, int opt) {
+void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
+	std::cout << "KqueueManage::create : " << fd.getFd() << std::endl;
 	int raw = fd.getFd();
-
-	//addToSets(fd.raw(), operations);
-
-	//this->_callbackMap[raw] = &callback;
-
-	//this->_callbackMap[raw]->recv()
-	// m_fileDescriptors[raw] = &fd;
-	
+	this->_callbackMap[raw] = &callback;
+	this->_fdMap[raw] = &fd;
 }
 
-void KqueueManage::run() {
+bool KqueueManage::recv(int fd) {
+	std::cout << _fdMap.size() << std::endl;
+	std::cout << _callbackMap.size() << std::endl;
+	bool b = this->_callbackMap[fd]->recv(*this->_fdMap[fd]);
+	return (b);
+}
 
+bool KqueueManage::send(int fd) {
+	std::cout << "KqueueManage::send : " << fd << std::endl;
+	bool b;
+	if (!this->_callbackMap[fd]) {
+		std::cout << "KqueueManage::send : _callbackMap" << fd << std::endl;
+		return (true);
+	}
+	b = this->_callbackMap[fd]->send(*this->_fdMap[fd]);
+	return (b);
 }
