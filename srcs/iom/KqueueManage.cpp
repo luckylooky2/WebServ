@@ -107,7 +107,9 @@ void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
 bool KqueueManage::recv(int fd) {
 	std::cout << _fdMap.size() << std::endl;
 	std::cout << _callbackMap.size() << std::endl;
-	bool b = this->_callbackMap[fd]->recv(*this->_fdMap[fd]);
+	bool b;
+	if (this->_callbackMap[fd])
+		b = this->_callbackMap[fd]->recv(*this->_fdMap[fd]);
 	return (b);
 }
 

@@ -7,7 +7,7 @@ int Client::_s_connCnt = 0;
 
 Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 	: _inetAddress(inetAddress), _server(server), _socket(socket), _in(this->_socket), _out(this->_socket)
-	, _req(), _res(), _maker(this->_req, this->_res, *this), _parser(*this), _pathParser() {
+	, _req(), _res(), _maker(this->_req, this->_res, *this), _parser(*this), _pathParser(), _putTask(), _cgiTask() {
 	Client::_s_connCnt++;
 	this->_currProgress = Client::HEADER;
 	KqueueManage::instance().create(this->_socket, *this);

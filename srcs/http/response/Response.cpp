@@ -42,8 +42,8 @@ bool Response::store(Storage& buffer) {
 			_headString.append(SHTTP::CRLF);
 			_headString.append("Server: ");
 			_headString.append(APPLICATION_NAME);
-							_headString.append(SHTTP::CRLF);
-				_headString.append(SHTTP::CRLF);
+				// 			_headString.append(SHTTP::CRLF);
+				// _headString.append(SHTTP::CRLF);
 				// _headString.append(SHTTP::CRLF);
 			buffer.store(_headString);
 			std::cout << "================!!!=====================" << std::endl;

@@ -6,7 +6,7 @@ class Client;
 
 long Parser::headerMaxLength = 8 * 1024 * 1024;
 
-Parser::Parser(Client& client) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header(), _client(client), _isMax(false), _headerSize(0) {}
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header(), _client(client), _isMax(false), _headerSize(0), _bodyDecoder() {}
 
 Parser::~Parser(void) {
 	if (_bodyDecoder)
