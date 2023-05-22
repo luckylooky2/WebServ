@@ -99,8 +99,8 @@ private:
 		state[HTTPStatus::METHOD_NOT_ALLOWED].second = "Method Not Allowed";
 		state[HTTPStatus::NOT_ACCEPTABLE].first = HTTPStatus::NOT_ACCEPTABLE;
 		state[HTTPStatus::NOT_ACCEPTABLE].second = "Not Acceptable";
-		state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED].first = "Proxy Authentication Required";
-		state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED] = "Proxy Authentication Required";
+		state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED].first = HTTPStatus::PROXY_AUTHENTICATION_REQUIRED;
+		state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED].second = "Proxy Authentication Required";
 		state[HTTPStatus::REQUEST_TIMEOUT].first = HTTPStatus::REQUEST_TIMEOUT;
 		state[HTTPStatus::REQUEST_TIMEOUT].second = "Request Timeout";
 		state[HTTPStatus::CONFLICT].first = HTTPStatus::CONFLICT;
