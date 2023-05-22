@@ -12,6 +12,16 @@
 #include "../response/HTTPState.hpp"
 #include "../response/make/ResponseMaker.hpp"
 #include "../../exception/Exception.hpp"
+#include "../../iom/KqueueManage.hpp"
+#include "../response/StatusLine.hpp"
+#include "../parse/Parser.hpp"
+#include "../parse/PathParser.hpp"
+// #include "../response/method/IMethod.hpp"
+
+#include "../../exception/Exception.hpp"
+#include "../response/method/PutTask.hpp"
+#include "../cgi/CGITask.hpp"
+#include "../../util/Time.hpp"
 
 class Server;
 /**
@@ -24,6 +34,9 @@ class Server;
 // class ResponseMaker;
 class Response;
 class Request;
+class PutTask;
+class CGITask;
+class Parser;
 
 class Client : public RWCallback {
 public:
@@ -33,7 +46,7 @@ private:
 	InetAddress		_inetAddress;
 	Server&			_server;
 	Socket&			_socket;
-	std::string 	_body;
+	std::string 	_body; // request body
 	SocketStorage 	_in;
 	SocketStorage 	_out;
 	//State m_state;
@@ -42,8 +55,15 @@ private:
 	Request			_req;
 	Response 		_res;
 	ResponseMaker	_maker;
-	bool 			_keepAlive;
+	bool 			_isKeepAlive;
 	int				_currProgress;
+	Parser			_parser;
+	PathParser		_pathParser;
+
+	PutTask*		_putTask;
+	CGITask*		_cgiTask;
+
+	unsigned long	_lastTime;
 
 	Client(void);
 	Client& operator=(const Client& other);
@@ -58,6 +78,26 @@ public:
 	bool progress(void);
 	bool progressHead(void);
 	bool progressBody(void);
+	Server& server(void);
+
+	int state(void);
+	Parser& parser(void);
+	Response& response(void);
+	Request& request(void);
+	ResponseMaker& maker(void);
+	void fileWrite(PutTask& task);
+	void cgiWrite(CGITask& task);
+	PutTask* fileWrite(void);
+	CGITask* cgiWrite(void);
+	std::string& body(void);
+	SocketStorage& in(void);
+	SocketStorage& out(void);
+	void end(void);
+	InetAddress inetAddress(void) const;
+	void updateTime(void);
+	unsigned long lastTime(void) const;
+public:
+	static void deny(Client& client);
 };
 
 #endif

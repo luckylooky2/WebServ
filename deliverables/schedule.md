@@ -1,3 +1,65 @@
+
+
+
+
+## 진행상황
+
+
+
+config
+
+- root block
+- server block
+- mime types
+- cgi block
+
+
+
+
+
+- [ ] parser
+
+- [ ] reader
+  - [ ] file read
+  - [ ] ​	
+
+​		
+
+- [ ] server-client connect 생명주기 관리
+
+- [ ] kqueue manage
+
+- [ ] request
+
+- [ ] response
+
+- [ ] cgi
+
+- [ ] cookie
+
+- [ ] util
+  - [ ] File
+  - [ ] FileDescriptor
+  - [ ] Time
+  - [ ] URI
+  - [ ] Envirenment
+
+ㅇ
+
+
+
+http version
+
+
+
+
+
+
+
+
+
+
+
 # 설계
 
 main -> webserv 생성 -> 
@@ -208,18 +270,11 @@ only one
 **함수**
 
 /**
-
 \* @brief 함수의 설명
-
 \* @date 함수 업데이트 날짜
-
 \* @return 리턴값에 대한설명
-
 \* @param 함수의 인자 설명
-
 */
-
-
 
 **클래스 주석**
 
@@ -237,26 +292,7 @@ only one
 
 */
 
-class ClassName
 
-{
-
-  /* do nothing */
-
-}
-
-
-
-/**
- * @file algorithm.hpp
- * @author yongjule (lyjshow200@gmail.com)
- * @brief my STL algorithms
- * @version 0.1
- * @date 2022-04-09
- *
- * @copyright Copyright (c) 2022
- *
-  */
 
 ### git 
 
@@ -270,7 +306,49 @@ feat :
 
 
 
+### 클래스 명명
 
+static class : 	 SClassname
+
+Interface : 		IClassname
+
+Abstract class : Aclassname
+
+class : 				Classname
+
+
+
+
+
+
+
+### callback
+
+https://codereader37.tistory.com/160
+
+
+
+### 소켓 recv send
+
+https://sunyzero.tistory.com/167
+
+
+
+
+
+|       |                       |
+| ----- | --------------------- |
+| SHTTP | sstream사용해도 되나? |
+
+
+
+
+
+
+
+filter
+
+before mid after 를 통해 바디를 쌓는다.
 
 
 

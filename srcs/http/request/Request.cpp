@@ -1,58 +1,88 @@
 #include "Request.hpp"
 
-typedef std::map<std::string, std::vector<std::string> >	headers_table;
-
 /* 
 	OCCF
 */
+Request::Request(void) : _resource(), _header() {}
 
-Request::Request() {}
-
-Request::Request(const Request& __copy)
+Request::Request(const Header& header, const StatusLine& statusLine, const URL& url) :
+		_statusLine(statusLine),
+		_url(url),
+		_header(header),
+		// _method(),
+		_resource(url.path())
 {
-	_reqString = __copy._reqString;
-	_requestLine = __copy._requestLine;
-	_headers = __copy._headers;
+}
+
+Request::Request(const Request& __copy) : _resource(__copy._resource) {
 	_body = __copy._body;
 }
 
-Request	Request::operator=(const Request& __copy)
-{
-	if (this != &__copy)
-	{
-		_reqString = __copy._reqString;
-		_requestLine = __copy._requestLine;
-		_headers = __copy._headers;
-		_body = __copy._body;
+Request	Request::operator=(const Request& other) {
+	if (this != &other) {
+		this->_resource = other._resource;
+		this->_body = other._body;
+		this->_isChunked = other._isChunked;
+		this->_statusLine = other._statusLine;
+		this->_url = other._url;
+		this->_header = other._header;
+		this->_serverBlock = other._serverBlock;
+		this->_locationBlock = other._locationBlock;
 	}
 	return (*this);
 }
 
-Request::~Request() {}
-
-/*
-	Member functions
-*/
-
-Request::Request(std::string __reqString)
-: _reqString(__reqString)
-{
-	_requestLine = RequestParser::parseRequestLine(_reqString.getRequestLine());
-	_headers = RequestParser::parseHeaders(_reqString.getHeaders());
-	if (_headers._headers["Transfer-Encoding"].size() == 0)
-		_isChunked = false;
-	else
-		_isChunked = _headers._headers["Transfer-Encoding"][0] == "chunked";
-	_body = _isChunked ? RequestParser::parseBody(_reqString.getBody()) : _reqString.getBody();
+Request::~Request(void) {
+	std::cout << "delete Request::~Request " << std::endl;
 }
 
-RequestString	Request::getReqString() { return (_reqString); }
-RequestLine		Request::getRequestLine() { return (_requestLine); }
-RequestHeaders	Request::getHeaders() { return (_headers); }
+std::string Request::body() {
+	return (_body);
+}
 
-e_method		Request::method() { return (_requestLine._method); }
-std::string		Request::uri() { return (_requestLine._uri); }
-float			Request::version() { return (_requestLine._version); }
-headers_table	Request::headers() { return (_headers._headers); }
-std::string		Request::body() { return (_body); }
-size_t			Request::header_count() { return (_headers._headerCount); }
+File Request::targetFile() {
+	return (File(root(), this->_resource));
+}
+
+std::string Request::root(void) const {
+	if (this->_locationBlock) {
+		if (!this->_locationBlock->getRoot().empty())
+			return (this->_locationBlock->getRoot());
+	}
+	if (this->_serverBlock) {
+		if (!this->_serverBlock->getRoot().empty()) {
+			return (this->_serverBlock->getRoot());
+		}
+	}
+	if (!Config::instance().rootBlock()->ServerBlockList().front()->getRoot().empty())
+		return (Config::instance().rootBlock()->ServerBlockList().front()->getRoot());
+	return (File::currentDir());
+}
+
+const URL& Request::url(void) const {
+	return (this->_url);
+}
+
+const std::string Request::resource() const {
+	return (this->_resource);
+}
+
+void Request::resource(const std::string &resource) {
+	this->_resource = resource;
+}
+
+void Request::serverBlock(const ServerBlock& serverBlock) {
+	this->_serverBlock = &serverBlock;
+}
+
+const ServerBlock* Request::serverBlock(void) const {
+	return (this->_serverBlock);
+}
+
+void Request::locationBlock(const LocationBlock& locationBlock) {
+	this->_locationBlock = &locationBlock;
+}
+
+const LocationBlock* Request::locationBlock(void) const {
+	return (this->_locationBlock);
+}

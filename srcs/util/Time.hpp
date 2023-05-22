@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <string>
 #include <sys/time.h>
+#include <sys/errno.h>
 #include "../exception/IOException.hpp"
 
 //https://www.joinc.co.kr/w/man/2/gettimeofday
@@ -16,20 +17,28 @@ class Time {
 public:
 	typedef struct tm		Tm;
 	typedef struct timeval	Tv;
+	typedef struct timespec Ts;
 
 private:
 	Tv	_timeval;
-
+	Tm	_time;
+	Ts	_timespac;
 public:
 	Time(void);
 	Time(Tv timeval);
+	Time(Tm time);
+	Time(Ts timespac);
 	Time(const Time& other);
 	Time& operator=(const Time& other);
 	~Time(void);
 	Tm longToTime();
 	std::string format(const char* str);
+	std::string formatTimeSpec(const char* str);
+
 public:
 	static Time NOW(void);
+	static unsigned long currentSecond(void);
+
 };
 
 #endif

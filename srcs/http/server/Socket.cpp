@@ -1,5 +1,6 @@
 #include "Socket.hpp"
 #include "../../exception/IOException.hpp"
+#include "../../util/ReleaseResource.hpp"
 
 const bool Socket::_s_isReuse = true;
 
@@ -14,13 +15,13 @@ Socket* Socket::create(void) {
 
 Socket::~Socket() throw() {}
 
-void Socket::bind(void) {
+void Socket::bind(int port) {
 	this->validateNotClosed();
     struct sockaddr_in server_addr;
     ::memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	server_addr.sin_port = htons(8080);
+	server_addr.sin_port = htons(port);
 
     if (::bind(this->getFd(), (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1)
         throw IOException("bind error : ", errno);
@@ -33,7 +34,7 @@ void Socket::listen(void) {
 }
 
 // 클라이언트 소켓 생성
-Socket* Socket::accept() {
+Socket* Socket::accept(InetAddress* address) const {
 	this->validateNotClosed();
 	struct sockaddr_storage addr;
 	socklen_t len = sizeof(addr);
@@ -42,8 +43,15 @@ Socket* Socket::accept() {
 	if (fd == -1)
 		throw IOException("accept", errno);
 
-    ///fcntl(client_socket, F_SETFL, O_NONBLOCK);
-	return (new Socket(fd));
+	if (address)
+		*address = InetAddress::create((struct sockaddr*)&addr);
+
+	try {
+		return (new Socket(fd));
+	} catch (...) {
+		ReleaseResource::pointer(address);
+		throw;
+	}
 }
 
 ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
@@ -59,7 +67,7 @@ ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
 ssize_t Socket::send(const void *buffer, size_t length, int flags) {
 	this->validateNotClosed();
 	ssize_t ret;
-	std::cout << "send data : " << static_cast<const char *>(buffer) << std::endl;
+	// std::cout << "socket send : " << static_cast<const char *>(buffer) << std::endl;
 	
 	std::string s = std::string(static_cast<const char*>(buffer));
 
@@ -68,7 +76,7 @@ ssize_t Socket::send(const void *buffer, size_t length, int flags) {
 	// if ((ret = ::send(this->getFd(), tmp, tmps.size(), flags)) == -1)
 	if ((ret = ::send(this->getFd(), buffer, s.size(), flags)) == -1)
 		throw IOException("send error : ", errno);
-	std::cout << "send ret : " << ret << std::endl;
+	// std::cout << "send ret : " << ret << std::endl;
 	return (ret);
 }
 

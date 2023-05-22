@@ -1,9 +1,13 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
-#include "RequestString.hpp"
-#include "RequestParser.hpp"
-#include "RequestLine.hpp"
-#include "RequestHeaders.hpp"
+
+#include "../../file/File.hpp"
+#include "../response/StatusLine.hpp"
+#include "../URL.hpp"
+// #include "../response/method/Method.hpp"
+#include "../Header.hpp"
+#include "../../config/Config.hpp"
+#include <iostream>
 
 /**
  * @brief HTTP 요청 메시지 string을 파싱하여 저장
@@ -13,34 +17,34 @@
  */
 class Request {
 
-public:
-	typedef std::map<std::string, std::vector<std::string> >	headers_table;
+private:
+	std::string				_resource;
+	std::string				_body;
+	bool					_isChunked;
+	StatusLine				_statusLine;
+	URL						_url;
+	Header					_header;
+	// const Method*			_method;
+	const ServerBlock*		_serverBlock;
+	const LocationBlock*	_locationBlock;
 
 public:
-	Request();
-	~Request();
+	Request(void);
+	Request(const Header& header, const StatusLine& statusLine, const URL& url);
+	~Request(void);
 	Request(const Request& __copy);
 	Request	operator=(const Request& __copy);
 
-	Request(std::string __reqString);
-	
-	RequestString	getReqString();
-	RequestLine		getRequestLine();
-	RequestHeaders	getHeaders();
-
-	e_method		method();
-	std::string		uri();
-	float			version();
-	headers_table	headers();
 	std::string		body();
-	size_t			header_count();
+	File			targetFile(void);
+	std::string		root(void) const;
+	const URL&		url(void) const;
+	const std::string resource() const;
+	void resource(const std::string& resource);
 
-private:
-	RequestString			_reqString;
-	RequestLine				_requestLine;
-	RequestHeaders			_headers;
-	std::string				_body;
-	bool					_isChunked;
+	void serverBlock(const ServerBlock& serverBlock);
+	const ServerBlock* serverBlock(void) const;
+	void locationBlock(const LocationBlock& locationBlock);
+	const LocationBlock* locationBlock(void) const;
 };
-
 #endif

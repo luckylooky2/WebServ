@@ -27,6 +27,7 @@ public:
 	ResponseMaker(Request& req, Response& res, Client& client);
 	virtual ~ResponseMaker(void);
 	void setMaker(void);
+	void setLastMaker(void);
 	void executeMaker(void);
 	void popMaker(void);
 
