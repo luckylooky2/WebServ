@@ -9,7 +9,7 @@ private:
 	std::string _path;
 	std::string _index;
 	std::string	_root;
-
+	std::string _autoindex;
 public:
 	LocationBlock(void);
 	LocationBlock(const LocationBlock& other);
@@ -22,6 +22,8 @@ public:
 	std::string getPath(void) const;
 	void setRoot(std::string str);
 	std::string getRoot(void) const;
+	void setAutoindex(std::string str);
+	std::string getAutoindex(void) const;
 	void check(std::string key, std::string value);
 
 };

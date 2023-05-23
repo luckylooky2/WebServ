@@ -31,6 +31,8 @@ public:
 	int getMaxConnection(void) const;
 	int getWorkerCnt(void) const;
 	std::string getInclude(void) const;
+	void setRoot(std::string str);
+	std::string getRoot(void) const;
 	void appendServerBlock(ServerBlock* serverBlock);
 	std::list<ServerBlock*> ServerBlockList(void);
 	void check(std::string key, std::string value);

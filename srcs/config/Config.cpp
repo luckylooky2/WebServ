@@ -36,10 +36,7 @@ Config::Config(void) {
 		if (firstWord == std::string::npos) break;
 		ret = dest.find_first_of(ISSPACE, firstWord);
 		if (ret == std::string::npos) break;
-	
-		// 여러개일 수 있지만 우선 한개
 		if (dest.substr(firstWord, ret - firstWord).compare("server") == 0) {
-			// std::list<ServerBlock*> list =  root.ServerBlockList();
 			ServerBlock *serverBlock = new ServerBlock();
 			ret = dest.find_first_of("{", ret);
 			if (ret == std::string::npos) break;
@@ -53,10 +50,9 @@ Config::Config(void) {
 				ret = dest.find_first_of(ISSPACE, firstWord);
 				if (ret == std::string::npos) break;
 				std::string key =  dest.substr(firstWord, ret - firstWord);
-				// std::cout << "===========server key : " << key << std::endl;
+				if (key.compare("}") == 0)
+					break;
 				if (dest.substr(firstWord, ret - firstWord).compare("location") == 0) {
-					// std::cout << "location start : " << std::endl;
-					// std::list<LocationBlock*> list =  serverBlock->LocationBlockList();
 					LocationBlock *locationBlock = new LocationBlock();
 					firstWord = dest.find_first_not_of(ISSPACE, ret);
 					if (firstWord == std::string::npos) break;
@@ -97,7 +93,6 @@ Config::Config(void) {
 				serverBlock->check(key, value);
 				ret++;
 			}
-			std::cout << serverBlock->getListen() << std::endl;
 			rootBlock->appendServerBlock(serverBlock);
 		}
 	}

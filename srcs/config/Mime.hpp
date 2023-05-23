@@ -24,6 +24,7 @@ public:
 	~Mime(void);
 	Mime::MimeMapType mimeMap(void) const;
 	Mime::MimeType mime(void) const;
+	std::string findType(std::string extension) const;
 };
 
 #endif

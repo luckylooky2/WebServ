@@ -45,6 +45,14 @@ std::string LocationBlock::getRoot(void) const {
 	return (this->_root);
 }
 
+void LocationBlock::setAutoindex(std::string str) {
+	this->_autoindex = str;
+}
+
+std::string LocationBlock::getAutoindex(void) const {
+	return (this->_autoindex);
+}
+
 void LocationBlock::check(std::string key, std::string value) {
 	typedef void (LocationBlock::*FuncPointer)(std::string);
 	typedef std::map<std::string, FuncPointer> FuncMap;
@@ -55,6 +63,7 @@ void LocationBlock::check(std::string key, std::string value) {
 	_map["index"] = &LocationBlock::setIndex;
 	_map["path"] = &LocationBlock::setPath;
 	_map["root"] = &LocationBlock::setRoot;
+	_map["autoindex"] = &LocationBlock::setAutoindex;
 
 	_pos = _map.find(key);
 	if (_pos != _map.end()) {

@@ -1,7 +1,7 @@
 #include "ServerBlock.hpp"
 #include <map>
 
-ServerBlock::ServerBlock(void) {}
+ServerBlock::ServerBlock(void) : _listen(0), _serverName() {}
 
 ServerBlock::ServerBlock(const ServerBlock& other) {
 	if (this != &other) {
