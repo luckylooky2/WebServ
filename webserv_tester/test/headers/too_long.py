@@ -25,3 +25,5 @@ def too_long(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+too_long(8081)

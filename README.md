@@ -3,13 +3,109 @@
 기능추가
 - autoindex
 - 서버추가
-- 독수리
-
+- 이미지출력
 서브젝트 다시읽기
 평가지 읽기
 코드정리
 테스트코드 작성
 다이어그램 만들기
+
+
+/*
+socket nonblock
+https://velog.io/@jyongk/TCP-Socket-Blocking-Non-Blocking 
+listen, accept 설명
+https://blog.devkcr.org/172
+https://helloworld-88.tistory.com/215
+accept 두번째 인자로 client의 ip, port 정보를 받을 수 있나 ?
+*/
+
+## 평가준비
+
+
+
+<check/ask>
+http server 개념서려명
+
+i/o multiplexing 설명
+
+accept, client read, write 개념 설명
+
+the select should be in the main loop and should check fd for read and write AT THE SAME TIME,
+if not please give a 0 and stop the evaluation.
+
+there should be only one read or one write per client per select. ask to show you the code that goes 
+from the select to the read and write of a client.
+
+search for all read/write on a socket and check that if an error returned the client is removed.
+
+read write는 0, -1 두개 다 체크해야 함.
+
+if a check of errno is done after read, write. please stop the evaluation and put a mark to 0
+
+
+writing or reading NAY file descriptor without going through the select is strictly FORBIDDEN.
+
+<configuration>
+
+in the configuration file check if you can do the following and test the result.
+- look for the http response status codes list on internet and during this evaluation
+if any status codes is wrong don't give related points.
+- setup multiple servers with different port
+- serup multiple servers with different hostname (curl --resolve example.com:80:127.0.0.1 q)
+- setup default error pate (404)
+limit the client body (curl -X POST -H "Content-Type: plain/text" --data "Body is here sfgr")
+- setup routes in a server to different diriectories
+- setup a default file to search for if you ask for a directory.
+- setup a list of method accepted for a certain rout (try to delete something with and without permission)
+
+<basic check>
+telnet, curl, prepared files.
+get , post, delete, unknown
+state code must be good.
+upload some file to the server and get it back (다운로드 기능 필요.)
+
+
+<check with a browser>
+
+Use the reference browser of the team, open the network part of it and try to connect to the server with it.
+look at the request header and response header
+it should be compatible to serve a fully static website
+try a wrong url on the server
+try to list a directory
+try a redireected URL
+try things
+
+
+<port issues>
+2개서버에 포트가 같으면 실행되면 안된다.
+
+Launch multiple servers at the same time with different configurations but with common ports. Is it working? if it is working, ask why the server should work if one of the configurations isn't working. keep going
+
+
+
+<siege & stress test>
+99.5%
+leak
+check if there is no hanging connection
+
+rm -rf $HOME/.brew
+git clone --depth=1 https://github.com/Homebrew/brew $HOME/goinfre/.brew
+echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc
+source $HOME/.zshrc
+brew update
+
+brew install siege
+siege -b  http://localhost:8080
+siege -b --reps=8 http://localhost:8080
+
+../../goinfre/.brew/bin/./siege -b http://localhost:8080
+../../goinfre/.brew/bin/./siege -c2 -t30S "http://localhost:8080/register POST {\"contactName\":\"John DaCosta\"}" --content-type "application/json"
+
+
+<bonus>
+
+CGI - there's more than one CGI system.
 
 # reference
 
@@ -268,18 +364,3 @@ GG, So far so good! Run your own tests now! :D
 ********************************************************************************
 
 
-
-
-
-rm -rf $HOME/.brew
-git clone --depth=1 https://github.com/Homebrew/brew $HOME/goinfre/.brew
-echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc
-source $HOME/.zshrc
-brew update
-
-brew install siege
-siege -b  http://localhost:8080
-siege -b --reps=8 http://localhost:8080
-
-../../goinfra/.brew/bin/./siege -b http://localhost:8080
-../../goinfre/.brew/bin/./siege -c2 -t30S "http://localhost:8080/register POST {\"contactName\":\"John DaCosta\"}" --content-type "application/json"

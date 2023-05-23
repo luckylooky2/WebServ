@@ -20,3 +20,5 @@ def four_elems(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+four_elems(8080)

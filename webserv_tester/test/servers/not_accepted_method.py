@@ -17,3 +17,6 @@ def not_accepted_method(port, port2):
     r = requests.head(rhost + str(port2) + "/")
     print(blue + "I received: port " + str(port2) + nc)
     print("Status Code: " + str(r.status_code))
+
+
+not_accepted_method(8080, 8081)

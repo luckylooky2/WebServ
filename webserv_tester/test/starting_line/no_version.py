@@ -20,3 +20,5 @@ def no_version(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+no_version(8080)

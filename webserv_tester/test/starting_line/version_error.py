@@ -20,3 +20,5 @@ def version_error(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+version_error(8080)

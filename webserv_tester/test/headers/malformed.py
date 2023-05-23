@@ -20,3 +20,6 @@ def malformed(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+
+malformed(8081)

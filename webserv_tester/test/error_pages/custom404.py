@@ -17,3 +17,5 @@ def custom404(port):
     print()
     print(r.text)
 
+
+custom404(8080)
