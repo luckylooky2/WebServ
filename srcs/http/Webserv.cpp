@@ -162,23 +162,31 @@ Webserv* Webserv::create(void) {
 	RootBlock* rootBlock = Config::instance().rootBlock();
 	
 	std::list<ServerBlock*> serverBlocks = rootBlock->ServerBlockList();
+	std::map<int, int> portMap;
 	for (std::list<ServerBlock*>::iterator sit = serverBlocks.begin(); sit != serverBlocks.end(); sit++) {
 		ServerBlock &serverBlock = *(*sit);
 		
 		std::string host = (serverBlock.getServerName().empty() == false) ? serverBlock.getServerName() : SHTTP::DEFAULT_HOST;
 		int port = (serverBlock.getListen() != 0) ? serverBlock.getListen() : SHTTP::DEFAULT_PORT;
 		hostToPortToServersMap[host][port].push_back(&serverBlock);
+
+		if (port <= 0 || port >= std::numeric_limits<short>::max())
+			throw RuntimeException("port " + Base::toString(port, 10) + " is out of range!");
+		std::map<int, int>::iterator pit = portMap.find(port);
+		if (pit == portMap.end())
+			portMap[port] = port;
+		else
+			throw RuntimeException("port duplicated! (" + Base::toString(port, 10) + ")");
 	}
 
+
 	ServerList httpServers;
-	for (host_iterator hit = hostToPortToServersMap.begin(); hit != hostToPortToServersMap.end(); hit++)
-	{
+	for (host_iterator hit = hostToPortToServersMap.begin(); hit != hostToPortToServersMap.end(); hit++) {
 		const std::string &host = hit->first;
 		const port_map &portMap = hit->second;
 
-		for (port_iterator pit = portMap.begin(); pit != portMap.end(); pit++)
-		{
-			short port = pit->first;
+		for (port_iterator pit = portMap.begin(); pit != portMap.end(); pit++) {
+			int port = pit->first;
 			std::list<ServerBlock*> serverBlocks = pit->second;
 
 			httpServers.push_back(new Server(host, port, serverBlocks));

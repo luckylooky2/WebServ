@@ -7,23 +7,21 @@
 #define SEMICOLON	";"
 
 class Reader {
-	private:
-		std::string _parser;
+private:
+	std::string _parser;
+	Reader(const Reader& other);
+	Reader& operator=(const Reader &other);
+public:
+	Reader(void);
+	Reader(const std::string& source);
+	virtual ~Reader(void);
 
-	public:
-		Reader(void);
-		Reader(const std::string& source);
-		Reader(const Reader& other);
-		virtual ~Reader(void);
+public:
+	std::string
+	read(void);
 
-		Reader& operator=(const Reader &other);
-
-	public:
-		std::string
-		read(void);
-
-	public:
-		static Reader from(const std::string& path);
+public:
+	static Reader from(const std::string& path);
 };
 
 #endif
