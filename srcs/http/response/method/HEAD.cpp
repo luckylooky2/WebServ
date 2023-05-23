@@ -1,4 +1,4 @@
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "HEAD.hpp"
 
 HEAD::HEAD(void) {}

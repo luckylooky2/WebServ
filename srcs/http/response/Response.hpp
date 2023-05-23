@@ -1,7 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "HTTPState.hpp"
+#include "HTTPStatus.hpp"
 #include "../../util/Storage.hpp"
 #include "StatusLine.hpp"
 #include "IBody.hpp"

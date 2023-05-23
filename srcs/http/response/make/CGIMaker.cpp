@@ -6,7 +6,7 @@
 #include "../../../exception/Exception.hpp"
 #include "../../cgi/CGI.hpp"
 #include "../../cgi/CGITask.hpp"
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "../../server/Client.hpp"
 #include "../../request/Request.hpp"
 #include "../Response.hpp"

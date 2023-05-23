@@ -9,7 +9,7 @@
 #include "SocketStorage.hpp"
 #include "../request/Request.hpp"
 #include "../response/Response.hpp"
-#include "../response/HTTPState.hpp"
+#include "../response/HTTPStatus.hpp"
 #include "../response/make/ResponseMaker.hpp"
 #include "../../exception/Exception.hpp"
 #include "../../iom/KqueueManage.hpp"

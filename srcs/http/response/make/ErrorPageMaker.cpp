@@ -23,7 +23,7 @@
 // #include <string>
 // #include <sys/stat.h>
 
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "../../../view/Page.hpp"
 // #include "../../../config/Config.hpp"
 
@@ -43,7 +43,7 @@ ErrorPageMaker& ErrorPageMaker::operator=(const ErrorPageMaker &other) {
 void ErrorPageMaker::make(Client& client, Request& req, Response& res, ResponseMaker& maker) {
 	(void)client;
 	(void)req;
-	
+
 	// if (!response.status().present())
 	// 	return (next());
 

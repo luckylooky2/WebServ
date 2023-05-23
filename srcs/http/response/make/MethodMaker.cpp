@@ -1,6 +1,6 @@
 #include "MethodMaker.hpp"
 #include "../../../exception/Exception.hpp"
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "../Response.hpp"
 #include "../../request/Request.hpp"
 #include "../../server/Client.hpp"

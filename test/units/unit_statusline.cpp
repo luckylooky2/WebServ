@@ -1,5 +1,5 @@
 #include "../test_unit.hpp"
-#include "../../srcs/http/response/HTTPState.hpp"
+#include "../../srcs/http/response/HTTPStatus.hpp"
 #include "../../srcs/http/response/StatusLine.hpp"
 #include <iostream>
 
