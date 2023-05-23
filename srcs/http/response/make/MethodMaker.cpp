@@ -15,29 +15,22 @@ MethodMaker::MethodMaker() {}
 MethodMaker::~MethodMaker() {}
 
 void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMaker& maker) {
-	// if (res.status())
-		// return (maker.nextMaker(););
-
 	try {
 		IMethod* method = Method::METHOD[client.parser().method()];
 		std::cout << "<MethodMaker::make> in do method !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << client.parser().method() <<  std::endl;
-		if (method->doMethod(req, res, client))
-			maker.executeMaker();
-		// const HTTPMethod *methodPtr = HTTPMethod::find(client.parser().method());
-		// if (methodPtr)
-		// {
-		// 	const HTTPMethod &method = *methodPtr;
-		// 	request.method(method);
+	
+		if (method) {
+			if (method->doMethod(req, res, client))
+				return (maker.executeMaker());
 
-		// 	if (method.hasBody())
-		// 		client.parser().maxBodySize(maxBodySizeFor(request.serverBlock(), request.locationBlock()));
+			// if (method.hasBody())
+			// 	client.parser().maxBodySize(maxBodySizeFor(request.serverBlock(), request.locationBlock()));
 
-		// 	if (isAcceptable(request.serverBlock(), request.locationBlock(), method))
-		// 		return (next());
-		// }
-		// response.headers().allow(request.allowedMethods());
-		// response.status(*HTTPStatus::METHOD_NOT_ALLOWED);
-		// response.end();
+			// if (isAcceptable(request.serverBlock(), request.locationBlock(), method))
+			// 	return (next());
+		}
+		res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
+		res.end();
 	} catch (Exception &exception) {
 		// Failed to do method
 		res.status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);

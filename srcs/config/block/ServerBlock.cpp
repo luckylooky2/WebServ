@@ -4,12 +4,28 @@
 ServerBlock::ServerBlock(void) {
 	std::cout << "server block constructor " << std::endl;
 }
-ServerBlock::ServerBlock(const ServerBlock& other) {	std::cout << "server block copyconstructor " << std::endl;
+ServerBlock::ServerBlock(const ServerBlock& other) {
+	if (this != &other) {
+		this->_cgi = other._cgi;
+		this->_index = other._index;
+		this->_listen = other._listen;
+		this->_locationBlockList = other._locationBlockList;
+		this->_root = other._root;
+		this->_serverName = other._serverName;
+	}
 }
 ServerBlock& ServerBlock::operator=(const ServerBlock& other) { 
-		std::cout << "server block assing constructor " << std::endl;
+	if (this != &other) {
+		this->_cgi = other._cgi;
+		this->_index = other._index;
+		this->_listen = other._listen;
+		this->_locationBlockList = other._locationBlockList;
+		this->_root = other._root;
+		this->_serverName = other._serverName;
+	}
+	return (*this);
+}
 
-	return (*this);}
 ServerBlock::~ServerBlock(void) {
 		std::cout << "server block delete " << std::endl;
 

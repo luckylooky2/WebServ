@@ -6,75 +6,14 @@ class Client;
 
 long Parser::headerMaxLength = 8 * 1024 * 1024;
 
-Parser::Parser(Client& client) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header(), _client(client), _isMax(false), _headerSize(0), _bodyDecoder() {}
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client) {
+	_isMax = false;
+	_hState = Parser::FIELD;
+}
 
 Parser::~Parser(void) {
 	if (_bodyDecoder)
 		delete _bodyDecoder;
-}
-
-std::vector<std::string>	Parser::split(std::string str, std::string delim)
-{
-    std::vector<std::string>	tokens;
-    size_t						pos = 0;
-    std::string					token;
-
-    while ((pos = str.find(delim)) != std::string::npos) {
-        token = str.substr(0, pos);
-        tokens.push_back(token);
-        str.erase(0, pos + delim.length());
-    }
-    if (str != "")
-        tokens.push_back(str);
-    return tokens;
-}
-
-std::vector<std::string>	Parser::split(std::string str, char delim)
-{
-    std::vector<std::string>	tokens;
-    size_t						pos = 0;
-    std::string					token;
-
-    while ((pos = str.find(delim)) != std::string::npos)
-	{
-        token = str.substr(0, pos);
-        tokens.push_back(token);
-        str.erase(0, pos + 1);
-    }
-    if (str != "")
-        tokens.push_back(str);
-    return tokens;
-}
-
-void	Parser::trim(std::string& str)
-{
-    // Trim leading spaces
-    std::string::iterator it = str.begin();
-    while (it != str.end() && std::isspace(*it)) {
-        ++it;
-    }
-    str.erase(str.begin(), it);
-
-    // Trim trailing spaces
-    it = str.end();
-    while (it != str.begin() && std::isspace(*(it - 1))) {
-        --it;
-    }
-    str.erase(it, str.end());
-}
-
-std::string Parser::toupper(std::string str)
-{
-    std::string result;
-
-    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
-    {
-        if ('a' <= *it && *it <= 'z')
-            result += char(*it - 'a' + 'A');
-        else
-            result += *it;
-    }
-    return result;
 }
 
 void Parser::parse(char c) {
@@ -240,9 +179,9 @@ void Parser::parse(char c) {
 		case Parser::HTTP_END_N:
 		{
 			if (c == '\r')
-				_state = Parser::STATE::END_R;
+				_state = Parser::END_R;
 			else if (c == '\n')
-				_state = Parser::STATE::END;
+				_state = Parser::END;
 			else
 			{
 				_state = Parser::HEADER_FIELDS;
@@ -255,9 +194,9 @@ void Parser::parse(char c) {
 		case Parser::END_R:
 		{
 			if (c == '\n')
-				_state = Parser::STATE::END;
+				_state = Parser::END;
 			else
-				_state = Parser::STATE::END;
+				_state = Parser::END;
 
 			break;
 		}
@@ -265,7 +204,7 @@ void Parser::parse(char c) {
 		case Parser::HEADER_FIELDS:
 		{
 			this->headerParse(c);
-			if (this->hState() == Parser::HSTATE::HEND)
+			if (this->hState() == Parser::HEND)
 				_state = Parser::END;
 			break;
 		}
@@ -283,6 +222,8 @@ void Parser::parse(char c) {
 		{
 			std::cout << "body!2" << std::endl;
 			size_t consumed = 0;
+			std::cout << _client.in().storage();
+						std::cout << "body!2" << std::endl;
 
 			bool finished = _bodyDecoder->consume(_client.in().storage(), _client.body(), consumed, _isMax);
 
@@ -317,11 +258,11 @@ std::string Parser::method(void) {
 }
 
 
-Parser::STATE Parser::state(void) {
+int Parser::state(void) {
 	return (this->_state);
 }
 
-void Parser::state(Parser::STATE state) {
+void Parser::state(int state) {
 	this->_state = state;
 }
 
@@ -329,7 +270,7 @@ void Parser::state(Parser::STATE state) {
 void Parser::headerParse(char c) {
 	switch (this->_hState)
 	{
-		case Parser::HSTATE::FIELD:
+		case Parser::FIELD:
 		{
 			if (c == ' ')
 			{
@@ -339,99 +280,99 @@ void Parser::headerParse(char c) {
 					throw Exception("Space after field");
 			}
 			else if (c == ':')
-				_hState = Parser::HSTATE::COLON;
+				_hState = Parser::COLON;
 			else
 				m_key += c;
 
 			break;
 		}
-		case Parser::HSTATE::COLON:
+		case Parser::COLON:
 		{
 			if (c == ' ')
-				_hState = Parser::HSTATE::SPACES_BEFORE_VALUE;
+				_hState = Parser::SPACES_BEFORE_VALUE;
 			else
 			{
-				_hState = Parser::HSTATE::VALUE;
+				_hState = Parser::VALUE;
 				m_value += c;
 			}
 
 			break;
 		}
-		case Parser::HSTATE::SPACES_BEFORE_VALUE:
+		case Parser::SPACES_BEFORE_VALUE:
 		{
 			if (c != ' ')
 			{
-				_hState = Parser::HSTATE::VALUE;
+				_hState = Parser::VALUE;
 				m_value += c;
 			}
 
 			break;
 		}
-		case Parser::HSTATE::VALUE:
+		case Parser::VALUE:
 		{
 			if (c == ' ')
-				_hState = Parser::HSTATE::SPACES_AFTER_VALUE;
+				_hState = Parser::SPACES_AFTER_VALUE;
 			else if (c == '\r')
-				commit(Parser::HSTATE::HEND_R);
+				commit(Parser::HEND_R);
 			else if (c == '\n')
-				commit(Parser::HSTATE::HEND_N);
+				commit(Parser::HEND_N);
 			else
 				m_value += c;
 
 			break;
 		}
 
-		case Parser::HSTATE::SPACES_AFTER_VALUE:
+		case Parser::SPACES_AFTER_VALUE:
 		{
 			if (c == ' ')
-				_hState = Parser::HSTATE::SPACES_AFTER_VALUE;
+				_hState = Parser::SPACES_AFTER_VALUE;
 			else if (c == '\r')
-				commit(Parser::HSTATE::HEND_R);
+				commit(Parser::HEND_R);
 			else if (c == '\n')
-				commit(Parser::HSTATE::HEND_N);
+				commit(Parser::HEND_N);
 			else
 			{
 				m_value += ' ';
 				m_value += c;
-				_hState = Parser::HSTATE::VALUE;
+				_hState = Parser::VALUE;
 			}
 
 			break;
 		}
-		case Parser::HSTATE::HEND_R:
+		case Parser::HEND_R:
 		{
 			if (c == '\n')
-				_hState = Parser::HSTATE::HEND_N;
+				_hState = Parser::HEND_N;
 			else
 				throw Exception("Expected a \\n");
 
 			break;
 		}
-		case Parser::HSTATE::HEND_N:
+		case Parser::HEND_N:
 		{
 			if (c == '\r')
-				_hState = Parser::HSTATE::HEND_R2;
+				_hState = Parser::HEND_R2;
 			else if (c == '\n')
-				_hState = Parser::HSTATE::HEND;
+				_hState = Parser::HEND;
 			else
 			{
 				m_key += c;
-				_hState = Parser::HSTATE::FIELD;
+				_hState = Parser::FIELD;
 			}
 
 			break;
 		}
-		case Parser::HSTATE::HEND_R2:
+		case Parser::HEND_R2:
 		{
 			if (c == '\n')
-				_hState = Parser::HSTATE::HEND;
+				_hState = Parser::HEND;
 			else
 				throw Exception("Expected a \\n");
 
 			break;
 		}
 
-		case Parser::HSTATE::HEND:
+		case Parser::HEND:
 			return;
 	}
 	this->_headerSize += 1;
@@ -450,15 +391,19 @@ void Parser::commit(Parser::HSTATE nextState) {
 }
 
 void Parser::headerClear(void) {
-	_hState = Parser::HSTATE::FIELD;
+	_hState = Parser::FIELD;
 	_header.clear();
 	m_key.clear();
 	m_value.clear();
 	_headerSize = 0;
 }
 
-Parser::HSTATE Parser::hState(void) const {
+int Parser::hState(void) const {
 	return (this->_hState);
+}
+
+void Parser::hState(int state) {
+	this->_hState = state;
 }
 
 const Header& Parser::header(void) const {

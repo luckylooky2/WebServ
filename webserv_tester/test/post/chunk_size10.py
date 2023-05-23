@@ -12,8 +12,9 @@ def chunk_size10(port):
     print(green + "Expected: Content must be \"John=Hola\\n\" & Content-Length = 10" + nc)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((TCP_IP, port))
-    toSend = "POST /cgi/displayChunk.sh HTTP/1.1\r\nHost: localhost:" + str(port) + "\r\n"
+    toSend = "POST /YoupiBanane/youpi.bla HTTP/1.1\r\nHost: localhost:" + str(port) + "\r\n"
     toSend += "Transfer-Encoding: chunked\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n"
+    toSend += "a\r\nJohn=Hola\n\r\n"
     toSend += "a\r\nJohn=Hola\n\r\n0\r\n\r\n"
     print(blue + "I send:\n" + nc)
     print(toSend)

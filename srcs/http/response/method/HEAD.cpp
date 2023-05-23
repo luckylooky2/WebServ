@@ -15,6 +15,7 @@ HEAD& HEAD::operator =(const HEAD &other) {
 }
 
 bool HEAD::doMethod(Request& req, Response& res, Client& cli) {
+	(void)cli;
 
 	File targetFile(req.targetFile());
 	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;

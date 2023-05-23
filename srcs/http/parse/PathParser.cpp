@@ -128,7 +128,7 @@ void PathParser::parse(char c) {
 
 	m_original += c;
 
-	if (m_original.size() >= PathParser::maxLength)
+	if (m_original.size() >= (unsigned long)PathParser::maxLength)
 		throw RuntimeException("too long url exception");
 }
 

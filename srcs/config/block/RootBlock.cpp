@@ -5,8 +5,14 @@ RootBlock::RootBlock(void) {}
 
 RootBlock::~RootBlock(void) {}
 
-RootBlock::RootBlock(const RootBlock& other) {}
-RootBlock& RootBlock::operator=(const RootBlock& other) {return (*this);}
+RootBlock::RootBlock(const RootBlock& other) {
+	(void)other;
+}
+
+RootBlock& RootBlock::operator=(const RootBlock& other) {
+	(void)other;
+	return (*this);
+}
 
 void RootBlock::setMaxConnection(std::string str) {
 	this->_maxConnection = (int)::strtol(str.c_str(), NULL, 10);

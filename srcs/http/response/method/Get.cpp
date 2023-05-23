@@ -48,6 +48,7 @@ std::string Get::listing(const URL& url, const File& file) {
 #include "../ResponseByFile.hpp"
 
 bool Get::doMethod(Request &req, Response &res, Client &cli) {
+	(void)cli;
 
 	File targetFile(req.targetFile());
 	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;
@@ -64,7 +65,9 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 
 	if (targetFile.isFile()) {
 		std::size_t contentLength = targetFile.size();
+		std::cout << "111121212" << std::endl;;
 		Time lastupdate(targetFile.stat().st_mtimespec);
+		std::cout << "111121212" << std::endl;;
 		Mime::MimeType contentType;
 
 		std::string extension;

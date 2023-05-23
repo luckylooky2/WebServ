@@ -27,6 +27,7 @@ private:
 	std::string _headString;
 	int			_state;
 	bool		_isEnd;
+	std::string _cgiExtension;
 	
 public:
 	Response(void);
@@ -44,7 +45,8 @@ public:
 	void end(void);
 	bool isEnd(void) const;
 	int state(void) const;
-
+	void cgiExtension(std::string str);
+	std::string cgiExtension(void) const;
 
 };
 

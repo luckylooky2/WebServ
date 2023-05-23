@@ -65,6 +65,7 @@ ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
 
 
 ssize_t Socket::send(const void *buffer, size_t length, int flags) {
+	(void)length;
 	this->validateNotClosed();
 	ssize_t ret;
 	// std::cout << "socket send : " << static_cast<const char *>(buffer) << std::endl;

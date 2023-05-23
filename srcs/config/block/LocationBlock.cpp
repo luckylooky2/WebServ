@@ -2,11 +2,22 @@
 
 LocationBlock::LocationBlock(void) {}
 LocationBlock::LocationBlock(const LocationBlock& other) {
-
+	if (this != &other) {
+		this->_index = other._index;
+		this->_path = other._path;
+		this->_root = other._root;
+	}
 }
+
 LocationBlock& LocationBlock::operator=(const LocationBlock& other) {
+	if (this != &other) {
+		this->_index = other._index;
+		this->_path = other._path;
+		this->_root = other._root;
+	}
 	return (*this);
 }
+
 LocationBlock::~LocationBlock(void) {}
 
 void LocationBlock::setIndex(std::string str) {

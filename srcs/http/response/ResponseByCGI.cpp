@@ -18,24 +18,26 @@ bool ResponseByCGI::isSelfManaged() const {
 
 bool ResponseByCGI::store(Storage& buffer) {
 	// if (this->_task.hasReadHeaders())
-	// 	return (false);
+	// 	return (false);	
 
 	bool hasResponseBody = this->_client.parser().method().compare("HEAD") != 0;
 
-	std::cout <<"hasResponseBody : " << hasResponseBody << std::endl;
+
+	// std::cout <<"hasResponseBody : " << this->_task.out().storage() << std::endl;
 	if (hasResponseBody) {
-		// std::cout << this->_task.out().storage() << std::endl;
-		
-		_client.response().header().append(Header::CONTENT_LENGTH, Base::toString(this->_task.out().storage().length(), 10));
-		buffer.store(ChunkEncoder::staticEncode(this->_task.out().storage()));
+		// std::cout << this->_task.out().storage() << std::endl;		
+		std::cout << "ChunkEncoder::staticEncode(this->_task.out().storage() : " << ChunkEncoder::staticEncode(this->_task.out().storage()) << "|" << std::endl;
+		// buffer.store(ChunkEncoder::staticEncode(this->_task.out().storage()));
+		buffer.store(this->_task.out().storage());
+		// buffer.store(this->_task.out().storage());
 	}
 
-	if (this->_task.isDone()) {
-		if (hasResponseBody)
-			buffer.store(ChunkEncoder::ZERO);
+	// if (this->_task.isDone()) {
+		// if (hasResponseBody)
+			// buffer.store(ChunkEncoder::ZERO);
 		this->_isEnd = true;
 		return (true);
-	}
+	// }
 	return (false);
 }
 

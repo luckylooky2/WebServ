@@ -15,7 +15,6 @@
 
 
 /*
-/*
 socket nonblock
 https://velog.io/@jyongk/TCP-Socket-Blocking-Non-Blocking 
 listen, accept 설명
@@ -42,6 +41,9 @@ void handler(int sig) {
 
 int main(int argc, char* argv[], char** envp) {
 
+	(void)argc;
+	(void)argv;
+
 	signal(SIGPIPE, SIG_IGN);
 	::signal(SIGINT, &handler);
 
@@ -57,6 +59,7 @@ int main(int argc, char* argv[], char** envp) {
 		logger.error(e.message());
 	}
 	ReleaseResource::pointer<Webserv>(webserv);
-	// system("leaks webserv");
+	std::cout <<"Awef" << std::endl;
+	system("leaks webserv");
 	return (0);
 }

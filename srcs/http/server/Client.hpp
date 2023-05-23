@@ -22,6 +22,7 @@
 #include "../response/method/PutTask.hpp"
 #include "../cgi/CGITask.hpp"
 #include "../../util/Time.hpp"
+#include "../cgi/CGI.hpp"
 
 class Server;
 /**

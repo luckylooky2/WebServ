@@ -246,3 +246,20 @@ Test multiple workers(20) doing multiple times(5): Post on /directory/youpi.bla 
 ********************************************************************************
 GG, So far so good! Run your own tests now! :D
 ********************************************************************************
+
+
+
+
+
+rm -rf $HOME/.brew
+git clone --depth=1 https://github.com/Homebrew/brew $HOME/goinfre/.brew
+echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc
+source $HOME/.zshrc
+brew update
+
+brew install siege
+siege -b  http://localhost:8080
+siege -b --reps=8 http://localhost:8080
+
+../../goinfra/.brew/bin/./siege -b http://localhost:8080
+../../goinfre/.brew/bin/./siege -c2 -t30S "http://localhost:8080/register POST {\"contactName\":\"John DaCosta\"}" --content-type "application/json"

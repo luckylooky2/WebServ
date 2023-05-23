@@ -61,7 +61,7 @@ void KqueueManage::setEvent(uintptr_t ident, int16_t filter, uint16_t flags, uin
 void KqueueManage::delEvent(int fd) {
 	std::vector<struct kevent>::iterator bit = this->_changeVec.begin();
 	for (std::vector<struct kevent>::iterator i = bit ; i !=  this->_changeVec.end() ; ++i) {
-		if ((*i).ident == fd) {
+		if ((*i).ident == (unsigned long)fd) {
 			EV_SET(&(*i), fd, EVFILT_READ, EV_DELETE | EV_ENABLE , 0, 0, NULL);
 			EV_SET(&(*i), fd, EVFILT_WRITE, EV_DELETE | EV_ENABLE, 0, 0, NULL);
 			std::cout << "delEvent : " << fd <<  std::endl;
@@ -105,9 +105,7 @@ void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
 }
 
 bool KqueueManage::recv(int fd) {
-	std::cout << _fdMap.size() << std::endl;
-	std::cout << _callbackMap.size() << std::endl;
-	bool b;
+	bool b = false;
 	if (this->_callbackMap[fd])
 		b = this->_callbackMap[fd]->recv(*this->_fdMap[fd]);
 	return (b);

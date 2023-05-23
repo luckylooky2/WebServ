@@ -4,12 +4,9 @@
 #include "../../util/Time.hpp"
 
 Server::Server(std::string host, int port, std::list<ServerBlock *> sb)
-		: _host(host),
+		: _socket(Socket::create()), _host(host),
 		_port(port),
-		_serverBlocks(sb),
-		_socket(Socket::create())
-		//_clients(),
-{
+		_serverBlocks(sb) {
 	if (this->_port == 0) {
 		this->_port = SHTTP::DEFAULT_PORT;
 	}
@@ -71,6 +68,7 @@ void Server::disconnect(Client& client) {
 
 
 bool Server::recv(FileDescriptor &fd) {
+	(void)fd;
 	// std::cout << "accete fd : " << fd.getFd() << std::endl;
 	// Socket &serverSocket = static_cast<Socket&>(fd);
 	// Socket* socket = this->connect(&serverSocket);
@@ -98,9 +96,17 @@ void Server::checkTimeout(void) {
             std::cout<<" client.cgiWrite()->timeoutTouch(" << std::endl;
 			client.updateTime();
 		} else if (client.lastTime() + timeout < now) {
-			this->clients().erase(client.socket().getFd());
-			delete this->clients()[client.socket().getFd()];
-			KqueueManage::instance().delEvent(client.socket().getFd());
+			// this->clients().erase(client.socket().getFd());
+			// delete this->clients()[client.socket().getFd()];
+			// KqueueManage::instance().delEvent(client.socket().getFd());
 		}
 	}
+}
+
+std::string Server::getHost() const {
+	return (this->_host);
+}
+
+int Server::getPort() const {
+	return (this->_port);
 }

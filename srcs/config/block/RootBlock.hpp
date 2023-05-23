@@ -19,9 +19,9 @@ private:
 	int								_workerCnt;
 	std::string						_include;
 	std::string						_root;
-public:
 	RootBlock(const RootBlock& other);
 	RootBlock& operator=(const RootBlock& other);
+public:
 	RootBlock(void);
 	~RootBlock(void);
 	

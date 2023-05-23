@@ -31,6 +31,9 @@ class CGITask : public RWCallback {
 		bool hasReadHeaders();
 		FileDescriptor& out();
 		bool timeoutTouch();
+		inline CGI& cgi(void)  const {
+			return (this->_cgi);
+		}
 };
 
 #endif

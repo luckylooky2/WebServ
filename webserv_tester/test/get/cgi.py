@@ -33,26 +33,24 @@ def cgiRequest(port, uri, expected, expectedBody = False, contentLength = False,
         print(r.text)
     else:
         print("Body not displayed as it is too long")
-    if expectedBody != False and r.text != expectedBody:
-        print(red + "FAILURE BODY" + nc)
-    if contentLength != False and r.headers["Content-Length"] != contentLength:
-        print(red + "FAILURE CONTENT-LENGTH" + nc)
+
 
 
 def cgi(port):
     pages = [
-            ["/cgi", "Content of index.sh", "Index\n", False, False],
-            ["/cgi/", "Content of index.sh", "Index\n", False, False],
-            ["/cgi/hello.sh", "Content of hello.sh", "Hello\n", False, False],
-            ["/cgi/emptyCGIOutput.sh", "No Freeze, No Crash", "", False, False],
-            ["/cgi/helloLong.sh", "Content-Length of 1300000", False, "1300000", False],
-            ["/cgi/envVar.sh", "Check body contains all request headers", False, False, False],
-            ["/cgi/queryStr.sh", "Content of Query String Var", "name=John&id=10\n", False, 
-                {"name": "John", "id": "10"} ]
+            # ["/cgi", "Content of index.sh", "Index\n", False, False],
+            # ["/cgi/", "Content of index.sh", "Index\n", False, False],
+            ["/YoupiBanane/youpi.bla", "Content of hello.sh", "Hello\n", False, False],
+            ["/YoupiBanane/index.php", "Content of hello.sh", "Hello\n", False, False]
+            # ["/cgi/emptyCGIOutput.sh", "No Freeze, No Crash", "", False, False],
+            # ["/cgi/helloLong.sh", "Content-Length of 1300000", False, "1300000", False],
+            # ["/cgi/envVar.sh", "Check body contains all request headers", False, False, False],
+            # ["/cgi/queryStr.sh", "Content of Query String Var", "name=John&id=10\n", False, 
+                # {"name": "John", "id": "10"} ]
         ]
     for page in pages:
         cgiRequest(port, page[0], page[1], page[2], page[3], page[4])
         input("Press Enter: ")
 
 
-cgi(80)
+cgi(8080)

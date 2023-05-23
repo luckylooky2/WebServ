@@ -12,12 +12,10 @@ Config::Config(void) {
 	servers 내용
 	locations 내용
 	*/
-	std::size_t pos = 0;
 	std::size_t ret = 0;
 
 	std::string dest = r;
 	    
-	std::size_t endline = 0;
 	std::string type ;
 	std::list<std::string> extensions;
 	std::size_t firstWord = 0;

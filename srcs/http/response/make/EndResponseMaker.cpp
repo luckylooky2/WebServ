@@ -14,6 +14,7 @@ EndResponseMaker& EndResponseMaker::operator=(const EndResponseMaker& other) {
 }
 
 void EndResponseMaker::make(Client& client, Request& req, Response& res, ResponseMaker& maker) {
+	(void)req;
 	// if (res.status().get()->isError() || req.headers().get(Header::CONNECTION).equals(Header::CLOSE))
 	// {
 	// 	if (!(res.status().get() == HTTPStatus::PAYLOAD_TOO_LARGE))

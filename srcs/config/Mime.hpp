@@ -16,10 +16,10 @@ public:
 private:
 	MimeMapType _mimeMap;
 	MimeType _mime;
-public:
-	Mime(void);
 	Mime(const Mime& other);
 	Mime& operator=(const Mime& other);
+public:
+	Mime(void);
 	Mime(const std::string file);
 	~Mime(void);
 	Mime::MimeMapType mimeMap(void) const;

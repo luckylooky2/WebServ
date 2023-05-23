@@ -60,9 +60,12 @@ Mime::Mime(const std::string file) {
 	}
 }
 
-Mime::Mime(const Mime& other) {}
+Mime::Mime(const Mime& other) {
+	(void)other;
+}
 
 Mime& Mime::operator=(const Mime& other) {
+	(void)other;
 	return (*this);
 }
 
