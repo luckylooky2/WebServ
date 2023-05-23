@@ -9,11 +9,11 @@
 class Reader {
 private:
 	std::string _parser;
-	Reader(const Reader& other);
-	Reader& operator=(const Reader &other);
 public:
 	Reader(void);
 	Reader(const std::string& source);
+	Reader(const Reader& other);
+	Reader& operator=(const Reader &other);
 	virtual ~Reader(void);
 
 public:
