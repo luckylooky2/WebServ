@@ -31,6 +31,8 @@ public:
 	static Webserv* create(void);
 	void run(void);
 	void stop(void);
+	Server& getServer(unsigned long ident);
+
 };
 
 #endif

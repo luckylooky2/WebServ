@@ -54,8 +54,8 @@ std::string Request::root(void) const {
 			return (this->_serverBlock->getRoot());
 		}
 	}
-	if (!Config::instance().rootBlock()->ServerBlockList().front()->getRoot().empty())
-		return (Config::instance().rootBlock()->ServerBlockList().front()->getRoot());
+	if (!Config::instance().rootBlock()->getRoot().empty())
+		return (Config::instance().rootBlock()->getRoot());
 	return (File::currentDir());
 }
 

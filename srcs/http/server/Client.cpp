@@ -1,6 +1,8 @@
 #include "Client.hpp"
 #include "../response/method/Method.hpp"
 #include "../../iom/KqueueManage.hpp"
+#include "../exception/UnsupportedVersionException.hpp"
+#include "../exception/TooBigHeaderException.hpp"
 
 int Client::_s_connCnt = 0;
 
@@ -10,7 +12,7 @@ Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 	, _req(), _res(), _maker(this->_req, this->_res, *this), _parser(*this), _pathParser(), _putTask(), _cgiTask() {
 	Client::_s_connCnt++;
 	this->_currProgress = Client::HEADER;
-	KqueueManage::instance().create(this->_socket, *this);
+	KqueueManage::instance().create(this->_socket, *this, _server.getSocket()->getFd());
 	updateTime();
 }
 
@@ -138,7 +140,7 @@ bool Client::progressHead(void) {
 	while (this->_in.getC(c)) {
 		std::cout << c ;
 		this->_in.next();
-		//bool catched = true;
+		bool exitParse = true;
 		try {
 			_parser.parse(c);
 			// if (m_parser.state() == HTTPRequestParser::S_END)
@@ -181,25 +183,23 @@ bool Client::progressHead(void) {
 				} else {
 					this->_maker.setMaker();
 					this->_maker.executeMaker();
-					this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
-					// this->_currProgress = Client::END;
 				}
 				break;
 			}
-			// catched = false;
+			exitParse = false;
+
+		} catch (UnsupportedVersionException& exception) {
+			this->_res.status(HTTPStatus::STATE[HTTPStatus::HTTP_VERSION_NOT_SUPPORTED]);
+		} catch (TooBigHeaderException& exception) {
+			this->_res.status(HTTPStatus::STATE[HTTPStatus::REQUEST_HEADER_FIELDS_TOO_LARGE]);
 		} catch (Exception &exception) {
-			std::cerr << "Failed to process header: " << exception.message() << std::endl;
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
 		}
-
-		// if (catched)
-		// {
-		// 	NIOSelector::instance().update(m_socket, NIOSelector::NONE);
-		// 	m_filterChain.doChainingOf(FilterChain::S_AFTER);
-		// 	m_state = S_END;
-
-		// 	break;
-		// }
+		if (exitParse == true) {
+			this->_maker.setLastMaker();
+			this->_maker.executeMaker();
+			break;
+		}
 	}
 
 	return (true);
@@ -219,7 +219,7 @@ bool Client::progressBody(void) {
 					// this->_maker .doChainingOf(FilterChain::S_AFTER);
 				// }
 				// m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
-				this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+				// this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
 				// KqueueManage::instance().setEvent(this->_socket.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 				return (true);
 				// }

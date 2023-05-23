@@ -53,7 +53,7 @@ void CGIMaker::make(Client& client, Request& req, Response& res, ResponseMaker& 
 		return (maker.executeMaker());
 	std::cout << "CGIMaker::mak555e : " << std::endl;
 
-	const ServerBlock::CgiType& cgiType = Config::instance().rootBlock()->ServerBlockList().front()->getCgi();
+	const ServerBlock::CgiType& cgiType = req.serverBlock()->getCgi();
 	// const CGIBlock &cgiBlock = Config::instance().rootBlock().getCGI(locationBlock.cgi().get());
 
 	// if (!cgiType.hasExtension(extension))

@@ -78,7 +78,7 @@ Header& Header::contentType(const std::string &mimeType) {
 	return (append(CONTENT_TYPE, mimeType));
 }
 
-Header& Header::html(void) {
+Header& Header::mimeHTML(void) {
 	return (contentType(MIME_HTML));
 }
 

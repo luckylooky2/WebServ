@@ -43,9 +43,9 @@ void disconnect_client(int client_fd, map<int, string>& clients)
 }
 
 KqueueManage::KqueueManage(void) {
-	std::cout << "kqieie init " << std::endl;
 	if ((this->_kqueueFd = ::kqueue()) == -1)
         throw IOException("kqueue() error : ", errno);
+	std::cout << "kqieie init " << this->_kqueueFd << std::endl;
 }
 
 KqueueManage::~KqueueManage(void) {}
@@ -73,6 +73,7 @@ void KqueueManage::delEvent(int fd) {
 	::close(fd);
 	this->_callbackMap.erase(fd);
 	this->_fdMap.erase(fd);
+	this->_serverFdMap.erase(fd);
 }
 
 void KqueueManage::kevent() {
@@ -97,11 +98,12 @@ struct kevent* KqueueManage::eventArr() {
 	return (this->_eventArr);
 }
 
-void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
+void KqueueManage::create(FileDescriptor& fd, RWCallback& callback, int serverFd) {
 	std::cout << "KqueueManage::create : " << fd.getFd() << std::endl;
 	int raw = fd.getFd();
 	this->_callbackMap[raw] = &callback;
 	this->_fdMap[raw] = &fd;
+	this->_serverFdMap[raw] = serverFd;
 }
 
 bool KqueueManage::recv(int fd) {
@@ -120,4 +122,10 @@ bool KqueueManage::send(int fd) {
 	}
 	b = this->_callbackMap[fd]->send(*this->_fdMap[fd]);
 	return (b);
+}
+
+int KqueueManage::serverFd(int fd) {
+	if (this->_serverFdMap[fd])
+		return (this->_serverFdMap[fd]);
+	return (-1);
 }

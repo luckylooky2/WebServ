@@ -5,6 +5,7 @@
 #include "../http/server/Server.hpp"
 #include "../log/LogFactory.hpp"
 #include "../util/Base.hpp"
+#include "SHTTP.hpp"
 
 Logger& Webserv::logger = LogFactory::get("Webserv");
 
@@ -22,10 +23,22 @@ Webserv& Webserv::operator=(const Webserv& other) {
 
 Webserv::~Webserv(void) {}
 
+Server& Webserv::getServer(unsigned long ident) {
+	int serverFd = KqueueManage::instance().serverFd((int)ident);
+	for (std::list<Server*>::iterator it = this->_servers.begin(); it != this->_servers.end(); it++) {
+		if ((*it)->getSocket()->getFd() == serverFd) {
+			return *(*it);
+		}
+	}
+	return (*this->_servers.front());
+}
+
 void Webserv::run(void) {
 
 	std::cout << "this->_servers.size() : " << this->_servers.size() << std::endl;
-	this->_servers.front()->init();
+
+	for (std::list<Server*>::iterator it = _servers.begin(); it != _servers.end(); it++)
+		(*it)->init();
 	this->_isRun = true;
 
     struct kevent* curr_event;
@@ -36,11 +49,12 @@ void Webserv::run(void) {
 		std::cout << "kevent : " << KqueueManage::instance().eventCount() <<  std::endl;
         for (int i = 0; i < KqueueManage::instance().eventCount() ; ++i) {
             curr_event = &KqueueManage::instance().eventArr()[i];
+			Server& server = getServer(curr_event->ident);
 			//  (&KqueueManage::instance())->changeVec().clear();
 			std::cout << "curr_event->ident : " << curr_event->ident <<  " " << KqueueManage::instance().eventCount() <<  std::endl;
 			
             if (curr_event->flags & EV_ERROR) {
-                if (curr_event->ident == (unsigned long)this->_servers.front()->getSocket()->getFd())
+                if (curr_event->ident == (unsigned long)server.getSocket()->getFd())
                     throw IOException("server socket error", errno);
                 else
                 {
@@ -50,11 +64,11 @@ void Webserv::run(void) {
             }
             else if (curr_event->filter == EVFILT_READ)
             {
-                if (curr_event->ident == (unsigned long)this->_servers.front()->getSocket()->getFd())
+                if (curr_event->ident == (unsigned long)server.getSocket()->getFd())
                 {
                     /* accept new client */
 					try {
-						Socket* clientSocket = this->_servers.front()->connect(this->_servers.front()->getSocket());
+						Socket* clientSocket = server.connect(server.getSocket());
 						std::cout << "new:clientsocket : " <<  clientSocket->getFd() << " " << curr_event->ident << std::endl;
 						KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 						// KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
@@ -67,7 +81,7 @@ void Webserv::run(void) {
 					bool b = KqueueManage::instance().recv(curr_event->ident);
 					if (b == false) {
 						//std::cout <<"read false =================================================================";
-						this->_servers.front()->clients().erase(curr_event->ident);
+						server.clients().erase(curr_event->ident);
 						KqueueManage::instance().delEvent(curr_event->ident);
 						// throw IOException("recv error : ", errno);
 					} else {
@@ -78,10 +92,10 @@ void Webserv::run(void) {
             else if (curr_event->filter == EVFILT_WRITE)
             {
 				std::cout << "writefilter: " << curr_event->ident <<  std::endl;
-				if (this->_servers.front()->clients()[curr_event->ident]) {
+				if (server.clients()[curr_event->ident]) {
 					// std::cout << "server.clients()[curr_event->ident]->state() : " << server.clients()[curr_event->ident]->response().state() << std::endl;
 					// if (server.clients()[curr_event->ident]->state() != server.clients()[curr_event->ident]->END) {
-					if (this->_servers.front()->clients()[curr_event->ident]->response().isEnd() != true) {
+					if (server.clients()[curr_event->ident]->response().isEnd() != true) {
 					// if (!server.clients()[curr_event->ident]->in().storage().empty()) {
 						// server.clients().erase(curr_event->ident);
 						// KqueueManage::instance().delEvent(curr_event->ident);
@@ -91,13 +105,13 @@ void Webserv::run(void) {
 					bool b = KqueueManage::instance().send(curr_event->ident);
 					if (b == false) {
 						std::cout << "write fail " << std::endl;
-						this->_servers.front()->clients().erase(curr_event->ident);
-						delete this->_servers.front()->clients()[curr_event->ident];
+						server.clients().erase(curr_event->ident);
+						delete server.clients()[curr_event->ident];
 						KqueueManage::instance().delEvent(curr_event->ident);
 					} else {
 						std::cout << "write treutrue" << std::endl;
-						this->_servers.front()->clients().erase(curr_event->ident);
-						delete this->_servers.front()->clients()[curr_event->ident];
+						server.clients().erase(curr_event->ident);
+						delete server.clients()[curr_event->ident];
 						KqueueManage::instance().delEvent(curr_event->ident);
 					}
 				} else {
@@ -136,11 +150,41 @@ void Webserv::run(void) {
 }
 
 Webserv* Webserv::create(void) {
-	ServerList list;
-	list.push_back(new Server( Config::instance().rootBlock()->ServerBlockList().front()->getServerName()
-							, Config::instance().rootBlock()->ServerBlockList().front()->getListen()
-							, Config::instance().rootBlock()->ServerBlockList()));
-	return (new Webserv(list));
+
+	typedef std::map<int, std::list<ServerBlock*> > port_map;
+	typedef port_map::const_iterator port_iterator;
+
+	typedef std::map<std::string, port_map> host_map;
+	typedef host_map::const_iterator host_iterator;
+
+	host_map hostToPortToServersMap;
+
+	RootBlock* rootBlock = Config::instance().rootBlock();
+	
+	std::list<ServerBlock*> serverBlocks = rootBlock->ServerBlockList();
+	for (std::list<ServerBlock*>::iterator sit = serverBlocks.begin(); sit != serverBlocks.end(); sit++) {
+		ServerBlock &serverBlock = *(*sit);
+		
+		std::string host = (serverBlock.getServerName().empty() == false) ? serverBlock.getServerName() : SHTTP::DEFAULT_HOST;
+		int port = (serverBlock.getListen() != 0) ? serverBlock.getListen() : SHTTP::DEFAULT_PORT;
+		hostToPortToServersMap[host][port].push_back(&serverBlock);
+	}
+
+	ServerList httpServers;
+	for (host_iterator hit = hostToPortToServersMap.begin(); hit != hostToPortToServersMap.end(); hit++)
+	{
+		const std::string &host = hit->first;
+		const port_map &portMap = hit->second;
+
+		for (port_iterator pit = portMap.begin(); pit != portMap.end(); pit++)
+		{
+			short port = pit->first;
+			std::list<ServerBlock*> serverBlocks = pit->second;
+
+			httpServers.push_back(new Server(host, port, serverBlocks));
+		}
+	}
+	return (new Webserv(httpServers));
 }
 
 void Webserv::stop(void) {

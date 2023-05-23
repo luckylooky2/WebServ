@@ -37,7 +37,7 @@ std::string FileDescriptor::readString(void) {
   while (true) {
     size = ::read(_fd, buf, SHTTP::DEFAULT_READSIZE);
     if (!size) {
-		// this->_isReadCompleted = true;
+		this->_isReadCompleted = true;
 		return content;
     } else if (size == -1) {
 		return "";

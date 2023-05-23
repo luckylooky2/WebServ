@@ -6,6 +6,7 @@ RM 			= rm -f
 INCS 		= -I
 SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
 				srcs/exception/Exception.cpp srcs/exception/RuntimeException.cpp srcs/exception/IOException.cpp srcs/exception/IllegalStateException.cpp srcs/exception/IllegalArgumentException.cpp srcs/exception/NullPointerException.cpp \
+				srcs/http/exception/UnsupportedVersionException.cpp srcs/http/exception/TooBigHeaderException.cpp \
 				srcs/file/FileDescriptor.cpp srcs/file/File.cpp \
 				srcs/config/block/RootBlock.cpp srcs/config/block/ServerBlock.cpp srcs/config/block/LocationBlock.cpp srcs/config/Config.cpp srcs/config/Mime.cpp srcs/config/Reader.cpp \
 				srcs/http/server/Server.cpp srcs/http/server/Socket.cpp srcs/http/Header.cpp \

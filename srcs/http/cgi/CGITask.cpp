@@ -26,8 +26,8 @@ CGITask::CGITask(Client& client, CGI& cgi) :
 		wroteBodyUpTo(), _running(true) {
 	IMethod* method = Method::METHOD[client.parser().method()];
 	std::cout << "CGITask::CGITask(Client& client, CGI& cgi)  : " << _out.getFd() << " " << method->getHasBody() << _cgi.file().path()  << std::endl;
-	KqueueManage::instance().create(this->_cgi.in(), *this);
-	KqueueManage::instance().create(this->_out, *this);
+	KqueueManage::instance().create(this->_cgi.in(), *this, _client.server().getSocket()->getFd());
+	KqueueManage::instance().create(this->_out, *this, _client.server().getSocket()->getFd());
 	if (method->getHasBody()) {
 		KqueueManage::instance().setEvent(_cgi.in().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 	}

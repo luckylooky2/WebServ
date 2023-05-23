@@ -35,6 +35,7 @@ class KqueueManage : public Singleton<KqueueManage> {
 public:
 	typedef std::map<int ,RWCallback*> _CallbackMap;
 	typedef std::map<int, FileDescriptor*> _FdMap;
+	typedef std::map<int, int> _ServerFdMap;
 	enum { ACCEPT = 1, READ = 2, WRITE = 3 };
     std::vector<struct kevent>	_changeVec; // kevent vector for changelist
 private:
@@ -46,6 +47,7 @@ private:
 	int							_eventCount;
 	_CallbackMap				_callbackMap;
 	_FdMap						_fdMap;
+	_ServerFdMap				_serverFdMap;
 	KqueueManage(const KqueueManage& other);
 	KqueueManage& operator=(const KqueueManage& other);
 public:
@@ -55,12 +57,12 @@ public:
 	void delEvent(int fd);
 	void kevent(void);
 	int eventCount(void) const;
-	void create(FileDescriptor& fd, RWCallback& callback);
-	//void update()
+	void create(FileDescriptor& fd, RWCallback& callback, int serverFd);
 	bool recv(int fd);
 	bool send(int fd);
 	std::vector<struct kevent>	changeVec(void) const;
 	struct kevent* eventArr();
+	int serverFd(int fd);
 };
 
 #endif

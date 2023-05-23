@@ -6,14 +6,7 @@
 Server::Server(std::string host, int port, std::list<ServerBlock *> sb)
 		: _socket(Socket::create()), _host(host),
 		_port(port),
-		_serverBlocks(sb) {
-	if (this->_port == 0) {
-		this->_port = SHTTP::DEFAULT_PORT;
-	}
-	if (_host.empty()) {
-		this->_host = SHTTP::DEFAULT_HOST;
-	}
-}
+		_serverBlocks(sb) {}
 
 Server::~Server(void) {
 	delete _socket;
@@ -24,14 +17,11 @@ void Server::init(void) {
 	this->_socket->setNonBlock();
 	this->_socket->bind(this->_port);
 	this->_socket->listen();
-	std::cout << "server socket : " << this->_socket->getFd() << std::endl;
 	KqueueManage::instance().setEvent(this->_socket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-	std::cout << " started " << std::endl;
-	KqueueManage::instance().create(*this->_socket, *this);
+	KqueueManage::instance().create(*this->_socket, *this, this->_socket->getFd());
 }	
 
-Socket*
-Server::getSocket(void) const {
+Socket* Server::getSocket(void) const {
 	return (this->_socket);
 }
 
@@ -96,9 +86,9 @@ void Server::checkTimeout(void) {
             std::cout<<" client.cgiWrite()->timeoutTouch(" << std::endl;
 			client.updateTime();
 		} else if (client.lastTime() + timeout < now) {
-			// this->clients().erase(client.socket().getFd());
-			// delete this->clients()[client.socket().getFd()];
-			// KqueueManage::instance().delEvent(client.socket().getFd());
+			this->clients().erase(client.socket().getFd());
+			delete this->clients()[client.socket().getFd()];
+			KqueueManage::instance().delEvent(client.socket().getFd());
 		}
 	}
 }
