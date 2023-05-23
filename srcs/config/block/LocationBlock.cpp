@@ -1,12 +1,24 @@
 #include "LocationBlock.hpp"
+#include <map>
 
 LocationBlock::LocationBlock(void) {}
 LocationBlock::LocationBlock(const LocationBlock& other) {
-
+	if (this != &other) {
+		this->_index = other._index;
+		this->_path = other._path;
+		this->_root = other._root;
+	}
 }
+
 LocationBlock& LocationBlock::operator=(const LocationBlock& other) {
+	if (this != &other) {
+		this->_index = other._index;
+		this->_path = other._path;
+		this->_root = other._root;
+	}
 	return (*this);
 }
+
 LocationBlock::~LocationBlock(void) {}
 
 void LocationBlock::setIndex(std::string str) {
@@ -33,8 +45,6 @@ std::string LocationBlock::getRoot(void) const {
 	return (this->_root);
 }
 
-
-#include <map>
 void LocationBlock::check(std::string key, std::string value) {
 	typedef void (LocationBlock::*FuncPointer)(std::string);
 	typedef std::map<std::string, FuncPointer> FuncMap;
@@ -45,10 +55,6 @@ void LocationBlock::check(std::string key, std::string value) {
 	_map["index"] = &LocationBlock::setIndex;
 	_map["path"] = &LocationBlock::setPath;
 	_map["root"] = &LocationBlock::setRoot;
-
-	// _map["limit_except"] = &LocationBlock::setListen;
-	// _map["auth"] = &LocationBlock::setListen;
-	// _map["auth"] = &LocationBlock::setListen;
 
 	_pos = _map.find(key);
 	if (_pos != _map.end()) {

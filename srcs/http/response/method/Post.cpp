@@ -6,8 +6,14 @@ Post::Post(void) {}
 Post::~Post(void) {}
 
 bool Post::doMethod(Request &req, Response &res, Client &cli) {
-	File targetFile(req.targetFile());
 
+	if (res.body()) {
+		return (true);
+	}
+
+	File targetFile(req.targetFile());
+	std::cout << "targetFiletargetFile : " << std::endl;
+	std::cout << targetFile.path() << std::endl;
 	bool justCreated = false;
 	std::string out;
 	if (targetFile.exists()) {

@@ -6,11 +6,11 @@
 Request::Request(void) : _resource(), _header() {}
 
 Request::Request(const Header& header, const StatusLine& statusLine, const URL& url) :
+		// _method(),
+		_resource(url.path()),
 		_statusLine(statusLine),
 		_url(url),
-		_header(header),
-		// _method(),
-		_resource(url.path())
+		_header(header)
 {
 }
 

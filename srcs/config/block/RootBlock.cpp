@@ -1,12 +1,19 @@
 #include "RootBlock.hpp"
 #include <iostream>
+#include <map>
 
 RootBlock::RootBlock(void) {}
 
 RootBlock::~RootBlock(void) {}
 
-RootBlock::RootBlock(const RootBlock& other) {}
-RootBlock& RootBlock::operator=(const RootBlock& other) {return (*this);}
+RootBlock::RootBlock(const RootBlock& other) {
+	(void)other;
+}
+
+RootBlock& RootBlock::operator=(const RootBlock& other) {
+	(void)other;
+	return (*this);
+}
 
 void RootBlock::setMaxConnection(std::string str) {
 	this->_maxConnection = (int)::strtol(str.c_str(), NULL, 10);
@@ -32,7 +39,6 @@ std::string RootBlock::getInclude(void) const {
 	return (this->_include);
 }
 
-#include <map>
 void RootBlock::check(std::string key, std::string value) {
 
 

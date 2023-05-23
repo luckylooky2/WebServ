@@ -1,19 +1,32 @@
 #include "ServerBlock.hpp"
+#include <map>
 
+ServerBlock::ServerBlock(void) {}
 
-ServerBlock::ServerBlock(void) {
-	std::cout << "server block constructor " << std::endl;
+ServerBlock::ServerBlock(const ServerBlock& other) {
+	if (this != &other) {
+		this->_cgi = other._cgi;
+		this->_index = other._index;
+		this->_listen = other._listen;
+		this->_locationBlockList = other._locationBlockList;
+		this->_root = other._root;
+		this->_serverName = other._serverName;
+	}
 }
-ServerBlock::ServerBlock(const ServerBlock& other) {	std::cout << "server block copyconstructor " << std::endl;
-}
+
 ServerBlock& ServerBlock::operator=(const ServerBlock& other) { 
-		std::cout << "server block assing constructor " << std::endl;
-
-	return (*this);}
-ServerBlock::~ServerBlock(void) {
-		std::cout << "server block delete " << std::endl;
-
+	if (this != &other) {
+		this->_cgi = other._cgi;
+		this->_index = other._index;
+		this->_listen = other._listen;
+		this->_locationBlockList = other._locationBlockList;
+		this->_root = other._root;
+		this->_serverName = other._serverName;
+	}
+	return (*this);
 }
+
+ServerBlock::~ServerBlock(void) {}
 
 void ServerBlock::setListen(std::string str) {
 	this->_listen = (int)::strtol(str.c_str(), NULL, 10);
@@ -68,7 +81,6 @@ const std::list<LocationBlock*> ServerBlock::locationBlockList(void) const {
 	return (this->_locationBlockList);
 }
 
-#include <map>
 void ServerBlock::check(std::string key, std::string value) {
 
 

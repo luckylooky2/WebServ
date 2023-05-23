@@ -26,7 +26,7 @@ void ResponseMaker::setMaker(void) {
 
 void ResponseMaker::setLastMaker(void) {
 	this->_maker.push(&ErrorPageMaker::instance());
-	// this->_maker.push(&EndResponseMaker::instance());
+	this->_maker.push(&EndResponseMaker::instance());
 }
 
 void ResponseMaker::popMaker(void) {

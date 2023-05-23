@@ -33,7 +33,7 @@ void InterceptorMaker::make(Client& client, Request& req, Response& res, Respons
 	const ServerBlock &serverBlock = *req.serverBlock();
 	const std::list<LocationBlock*> locations = serverBlock.locationBlockList();
 	if (locations.empty())
-		return (client.maker().executeMaker());
+		return (maker.executeMaker());
 
 	const std::string& path = client.parser().pathParser().path();
 
@@ -60,5 +60,5 @@ void InterceptorMaker::make(Client& client, Request& req, Response& res, Respons
 			req.resource(path);
 		}
 	}
-	client.maker().executeMaker();
+	maker.executeMaker();
 }

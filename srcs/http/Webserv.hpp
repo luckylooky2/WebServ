@@ -21,11 +21,11 @@ private:
 	ServerList	_servers;
 	bool		_isRun;
 	bool		_isStop;
+	Webserv(const Webserv& other);
+	Webserv& operator=(const Webserv& other);
 private:
 	Webserv(void);
 	Webserv(const ServerList& server);
-	Webserv(const Webserv& other);
-	Webserv& operator=(const Webserv& other);
 public:
 	virtual ~Webserv(void);
 	static Webserv* create(void);

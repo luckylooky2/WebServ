@@ -43,14 +43,16 @@ bool File::exists() const {
 }
 
 bool File::isFile() const {
+	std::cout <<"111111" << std::endl;
 	return (S_ISREG(this->stat().st_mode));
 }
 
-bool File::isDir() const {
+bool File::isDir() const {std::cout <<"1111121" << std::endl;
 	return (S_ISDIR(stat().st_mode));
 }
 
 bool File::isExecutable() const {
+	std::cout <<"1111113" << std::endl;
 	return (stat().st_mode & S_IXUSR);
 }
 
@@ -101,6 +103,8 @@ FileDescriptor* File::open(int flags, mode_t mode) const {
 }
 
 void File::remove(void) const {
+	std::cout << " File::remov" << this->path() << std::endl;
+
 	if (this->isDir())
 		::rmdir(this->_path.c_str());
 	else if(this->isFile())
@@ -167,9 +171,8 @@ std::string::size_type File::indexOfExtension() {
 	if (this->_path.rfind(SLASH) > std::string::npos)
 		return (std::string::npos);
 	else  {
-		std::cout << "????????????????????????????????????" << std::endl;
 		return (extensionPos);
-		}
+	}
 
 }
 

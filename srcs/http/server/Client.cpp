@@ -23,7 +23,12 @@ Client::~Client(void) {
 	Client::_s_connCnt--;
 	// delete &this->_in;
 	// delete &this->_out;
-	std::cout << "client disconnect !! " << this->_socket.getFd() << std::endl;
+	// this.
+	std::cout << "ininin" << std::endl;
+	// CGI&  cgi = this->_cgiTask->cgi();
+	// std::cout << cgi.pid()<<  std::endl;
+	// cgi.file().remove();
+	std::cout << "client disconenct !! " << this->_socket.getFd() << std::endl;
 	if (this->_putTask)
 		ReleaseResource::pointer(this->_putTask);
 	if (this->_cgiTask)
@@ -156,8 +161,13 @@ bool Client::progressHead(void) {
 				URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
 				_req = Request(_parser.header() ,StatusLine(), url);
 				std::cout << _parser.pathParser().path() << Method::METHOD[this->parser().method()] << std::endl;
-				if (Method::METHOD[this->parser().method()]->getHasBody() == true) {
-					_parser.state(Parser::STATE::BODY);
+				if (!Method::METHOD[this->parser().method()]) {
+					this->_res.header().contentLength(0);
+					this->_res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
+					this->_maker.setLastMaker();
+					this->_maker.executeMaker();
+				} else if (Method::METHOD[this->parser().method()]->getHasBody() == true) {
+					_parser.state(Parser::BODY);
 					this->_currProgress = Client::BODY;
 					_parser.parse(0);
 					if (_parser.state() != Parser::END)

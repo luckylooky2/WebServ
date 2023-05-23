@@ -1,4 +1,4 @@
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "HEAD.hpp"
 
 HEAD::HEAD(void) {}
@@ -15,6 +15,7 @@ HEAD& HEAD::operator =(const HEAD &other) {
 }
 
 bool HEAD::doMethod(Request& req, Response& res, Client& cli) {
+	(void)cli;
 
 	File targetFile(req.targetFile());
 	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;

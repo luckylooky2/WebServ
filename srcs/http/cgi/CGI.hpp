@@ -22,6 +22,7 @@ class CGI {
 		FileDescriptor&	_in;
 		FileDescriptor&	_out;
 		File&			_file;
+		std::string		_reqBody;
 		bool			_killed;
 
 	private:
