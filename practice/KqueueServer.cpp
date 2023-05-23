@@ -53,8 +53,7 @@ int main(int argc, char* argv[])
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = htons(atoi(argv[1]));
-    if (bind(server_socket, (struct sockaddr*)&server_addr
-			, sizeof(server_addr)) == -1)
+    if (bind(server_socket, (struct sockaddr*)&server_addr , sizeof(server_addr)) == -1)
         exit_with_perror("bind() error\n" + string(strerror(errno)));
 
     if (listen(server_socket, 5) == -1)

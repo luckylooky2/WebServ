@@ -1,5 +1,6 @@
 #include "RootBlock.hpp"
 #include <iostream>
+#include <map>
 
 RootBlock::RootBlock(void) {}
 
@@ -38,7 +39,6 @@ std::string RootBlock::getInclude(void) const {
 	return (this->_include);
 }
 
-#include <map>
 void RootBlock::check(std::string key, std::string value) {
 
 

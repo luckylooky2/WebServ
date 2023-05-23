@@ -1,4 +1,24 @@
+## 할거
+
+기능추가
+- autoindex
+- 서버추가
+- 독수리
+
+서브젝트 다시읽기
+평가지 읽기
+코드정리
+테스트코드 작성
+다이어그램 만들기
+
+# reference
+
+https://www.nginx.com/resources/wiki/start/topics/examples/full/
+https://12bme.tistory.com/366
+
+
 # webserv
+
 
 
 

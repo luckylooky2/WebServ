@@ -154,7 +154,6 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 	// 		env.appendOne(ENV_REMOTE_IDENT, basicAuthBlock->user());
 	// 	}
 	// }
-	std::cerr << "start 11" << std::endl;
 	const Header& header = client.parser().header();
 	for (Header::mconst_iterator it = header.begin(); it != header.end(); it++)
 		env.appendOne("HTTP_" + Base::toUpper(Replace::replace(Replace::replace(it->first, "=", "_"), "-", "_")), it->second.front());
@@ -188,7 +187,6 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 		::close(inPipe[0]);
 
 		char *const argv[] = {const_cast<char*>(path.c_str()), const_cast<char*>(file.c_str()), NULL};
-		// std::cerr << "start child pid : " <<  path.c_str() <<  " " << file.c_str() << " " << request.root().c_str() << _fileFd->getFd()  <<  std::endl;
 		::execve(path.c_str(), argv, envp);
 		
 		std::cerr << "Status: 500\r\n\r\nFAILED TO RUN CGI\n" << path << "\n" << std::strerror(errno) << std::flush;
@@ -198,16 +196,11 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 
 		if (client.body().empty())
         	write(inPipe[1],buf.c_str(),buf.size());
-			//client.response().header().append(Header::CONTENT_LENGTH, Base::toString(buf.size(), 10));
-		// else
-        	// write(inPipe[1],client.body().c_str(),client.body().size());
 			
 		ReleaseResource::pointer2th<char>(envp);
 
 		::close(inPipe[0]);
-		// ::close(inPipe[1]);
 		FileDescriptor *stdin = NULL;
-		FileDescriptor *stdout = NULL;
 		CGI *cgi = NULL;
 		CGITask *cgiTask = NULL;
 
@@ -225,8 +218,6 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 				delete stdin;
 			else
 				::close(inPipe[1]);
-			if (stdout)
-				delete stdout;
 			ReleaseResource::pointer(cgi);
 			ReleaseResource::pointer(cgiTask);
 			throw;

@@ -3,7 +3,7 @@
 InetAddress::InetAddress(void) {}
 InetAddress::~InetAddress(void) {}
 
-InetAddress::InetAddress(const InetAddress& other) : _port(other.port()), _address() {
+InetAddress::InetAddress(const InetAddress& other) : _address(), _port(other.port()) {
 	std::memcpy(this->_address, other._address, sizeof(this->_address));
 }
 
