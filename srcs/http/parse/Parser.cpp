@@ -1,12 +1,15 @@
 #include "Parser.hpp"
 
 #include "../server/Client.hpp"
+#include "../exception/UnsupportedVersionException.hpp"
+#include "../exception/TooBigHeaderException.hpp"
+#include "../../util/Base.hpp"
 
 class Client;
 
-long Parser::headerMaxLength = 8 * 1024 * 1024;
+long Parser::headerMaxLength = 8 * 1024;
 
-Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client) {
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client), _major(0), _minor(0) {
 	_isMax = false;
 	_hState = Parser::FIELD;
 }
@@ -20,7 +23,6 @@ void Parser::parse(char c) {
 
 	switch (this->_state)
 	{
-		std::cout << "state : " << this->_state << std::endl;
 		case Parser::NOT_STARTED:
 		{
 			if (c == '\r' || c == '\n')
@@ -121,10 +123,10 @@ void Parser::parse(char c) {
 
 		case Parser::HTTP_SLASH:
 		{
-			// if (!ft::isdigit(c))
-				// throw Exception("Expected a number");
+			if (!std::isdigit(c))
+				throw Exception("Expected a number");
 
-			// _major = c - '0';
+			_major = c - '0';
 			_state = Parser::HTTP_MAJOR;
 
 			break;
@@ -142,10 +144,10 @@ void Parser::parse(char c) {
 
 		case Parser::HTTP_DOT:
 		{
-			// if (!ft::isdigit(c))
-				// throw Exception("Expected a number");
+			if (!std::isdigit(c))
+				throw Exception("Expected a number");
 
-			// _minor = c - '0';
+			_minor = c - '0';
 			_state = Parser::HTTP_MINOR;
 
 			break;
@@ -153,8 +155,8 @@ void Parser::parse(char c) {
 
 		case Parser::HTTP_MINOR:
 		{
-			// if (!HTTPVersion::isSupported(m_minor, m_major))
-			// 	throw UnsupportedHTTPVersion::of(m_minor, m_major);
+			if (_major != SHTTP::MAJOR || _minor != SHTTP::MINOR)
+				throw UnsupportedVersionException(Base::toString(_major, 10) + "/" + Base::toString(_minor, 10) + " is not supported version");
 
 			if (c == '\r')
 				_state = Parser::HTTP_END_R;
@@ -376,9 +378,8 @@ void Parser::headerParse(char c) {
 			return;
 	}
 	this->_headerSize += 1;
-	// std::cout << "_hState : " << _hState << std::endl; 
 	if (this->_headerSize >= Parser::headerMaxLength)
-		throw Exception("too long header exception");
+		throw TooBigHeaderException("too big header size exception");
 }
 
 void Parser::commit(Parser::HSTATE nextState) {

@@ -21,3 +21,5 @@ def timeout(port):
         s.close()
     except Exception as e:
         print(repr(e))
+
+timeout(8080)

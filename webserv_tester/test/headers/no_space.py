@@ -20,3 +20,5 @@ def no_space(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+no_space(8081)

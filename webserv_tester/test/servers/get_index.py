@@ -18,3 +18,4 @@ def get_index(port, port2):
     print(blue + "I received: port " + str(port2) + nc)
     print(r.text)
 
+get_index(8080,8081)

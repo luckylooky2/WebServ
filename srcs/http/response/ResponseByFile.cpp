@@ -2,9 +2,9 @@
 #include "../../iom/KqueueManage.hpp"
 #include <iostream>
 
-ResponseByFile::ResponseByFile(FileDescriptor& fd, std::size_t contentLength) :
+ResponseByFile::ResponseByFile(FileDescriptor& fd, std::size_t contentLength, int serverFd) :
 		_fd(fd), _contentLength(contentLength), _store(0), _isEnd(false) {
-	KqueueManage::instance().create(fd, *this);
+	KqueueManage::instance().create(fd, *this, serverFd);
 	KqueueManage::instance().setEvent(fd.getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 }
 

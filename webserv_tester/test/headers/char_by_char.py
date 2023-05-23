@@ -28,4 +28,4 @@ def char_by_char(port):
     print(data.decode("ascii"))
     s.close()
 
-char_by_char(80)
+char_by_char(8080)

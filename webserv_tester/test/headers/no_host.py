@@ -20,3 +20,6 @@ def no_host(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+
+no_host(8081)

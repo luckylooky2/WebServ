@@ -2,7 +2,7 @@
 
 PutTask::PutTask(Client &client, FileDescriptor &fd, bool justCreated) :
 		_client(client), _fileDescriptor(fd), _storedCount(0), _justCreated(justCreated) {
-	KqueueManage::instance().create(fd, *this);
+	KqueueManage::instance().create(fd, *this, _client.server().getSocket()->getFd());
 	KqueueManage::instance().setEvent(fd.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 }
 
@@ -31,7 +31,6 @@ bool PutTask::send(FileDescriptor& fd) {
 			_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
 		
 		_client.maker().executeMaker();
-		// m_client.end();
 		_client.response().end();
 		return (true);
 	}

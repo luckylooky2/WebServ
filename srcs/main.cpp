@@ -4,6 +4,7 @@
 #include "log/LogFactory.hpp"
 #include "exception/Exception.hpp"
 #include "exception/IOException.hpp"
+#include "exception/RuntimeException.hpp"
 #include "util/SEnvironment.hpp"
 #include "util/ReleaseResource.hpp"
 #include "http/Webserv.hpp"
@@ -14,20 +15,8 @@
 #include <vector>
 
 
-/*
-socket nonblock
-https://velog.io/@jyongk/TCP-Socket-Blocking-Non-Blocking 
-listen, accept 설명
-https://blog.devkcr.org/172
-https://helloworld-88.tistory.com/215
-accept 두번째 인자로 client의 ip, port 정보를 받을 수 있나 ?
-*/
-
-// #define CONFIG_FILE "webserv.conf"
-
-
-static bool gracefulShutdown = false;
 Logger logger = LogFactory::get("main");
+static bool gracefulShutdown = false;
 static Webserv *webserv = NULL;
 
 void handler(int sig) {
@@ -54,12 +43,13 @@ int main(int argc, char* argv[], char** envp) {
 		webserv->run();
 		if (gracefulShutdown)
 			logger.error("completed Shutdown!");
-	} catch (IOException& e) {
+	} catch (RuntimeException& e) {
+		logger.error(e.message());
+	}  catch (IOException& e) {
 		ReleaseResource::pointer<Webserv>(webserv);
 		logger.error(e.message());
 	}
 	ReleaseResource::pointer<Webserv>(webserv);
-	std::cout <<"Awef" << std::endl;
-	system("leaks webserv");
+	// system("leaks webserv");
 	return (0);
 }

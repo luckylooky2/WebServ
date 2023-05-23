@@ -20,3 +20,5 @@ def two_hosts(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+two_hosts(8080)

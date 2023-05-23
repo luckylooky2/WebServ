@@ -20,3 +20,5 @@ def no_starting_line(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+no_starting_line(8080)

@@ -20,3 +20,5 @@ def no_method(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+no_method(8080)

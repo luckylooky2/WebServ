@@ -39,8 +39,8 @@ bool Response::store(Storage& buffer) {
 				_headString.append(StatusLine(_status).response());
 				_headString.append(SHTTP::CRLF);
 				_headString.append(header().format());
-				_headString.append("Content-Type: text/html");
-				_headString.append(SHTTP::CRLF);
+				// _headString.append("Content-Type: text/html");
+				// _headString.append(SHTTP::CRLF);
 				_headString.append("Date: ");
 				_headString.append(Time::NOW().format(SHTTP::DATEFORMAT));
 				_headString.append(SHTTP::CRLF);
@@ -56,9 +56,6 @@ bool Response::store(Storage& buffer) {
 			std::cout << ")))))))))))))))))))))))))))))))" << _state << std::endl;
 			return (false);
 		}
-
-		// case END:
-			// return (buffer.empty());
 	}
 	return (true);
 }

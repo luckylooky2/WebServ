@@ -20,3 +20,5 @@ def higher_version(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+higher_version(8080)

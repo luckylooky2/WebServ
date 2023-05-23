@@ -25,3 +25,5 @@ def default_page(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+default_page(8081)

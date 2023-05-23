@@ -20,3 +20,5 @@ def no_uri(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+no_uri(8080)

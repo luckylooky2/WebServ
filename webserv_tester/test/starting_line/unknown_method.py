@@ -20,3 +20,5 @@ def unknown_method(port):
     print(blue + "I received:\n" + nc)
     print(data.decode("ascii"))
     s.close()
+
+unknown_method(8080)
