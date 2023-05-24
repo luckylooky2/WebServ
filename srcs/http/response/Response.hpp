@@ -11,17 +11,11 @@
 #include "../../util/Base.hpp"
 #include "../../main.hpp"
 
-// #include "make/ResponseMaker.hpp"
-
-// class ResponseMaker;
-
 class Response {
 public:
 	enum State { INIT, HEADER, BODY, END };
 private:
 	HTTPStatus::StateType	_status;
-	// ResponseMaker			_maker;
-
 	Header		_header;
 	IBody*		_body;
 	std::string _headString;

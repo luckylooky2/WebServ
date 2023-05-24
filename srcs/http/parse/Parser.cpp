@@ -1,15 +1,15 @@
 #include "Parser.hpp"
-
 #include "../server/Client.hpp"
 #include "../exception/UnsupportedVersionException.hpp"
 #include "../exception/TooBigHeaderException.hpp"
+#include "../exception/PayloadTooBigException.hpp"
 #include "../../util/Base.hpp"
 
 class Client;
 
 long Parser::headerMaxLength = 8 * 1024;
 
-Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client), _major(0), _minor(0) {
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client), _major(0), _minor(0), _clientMaxBodySize(0) {
 	_isMax = false;
 	_hState = Parser::FIELD;
 }
@@ -32,7 +32,6 @@ void Parser::parse(char c) {
 		}
 		case Parser::METHOD:
 		{
-			// m_max = false;
 			if (c == ' ')
 			{
 				if (_state == Parser::NOT_STARTED)
@@ -41,12 +40,6 @@ void Parser::parse(char c) {
 			}
 			else
 			{
-				// if (!ft::isupper(c))
-				// 	throw Exception("Method is only upper-case letter");
-
-				// if (_method.length() > 20)
-				// 	throw Exception("Method is over 20 characters");
-
 				_state = Parser::METHOD;
 				_method += c;
 			}
@@ -187,7 +180,6 @@ void Parser::parse(char c) {
 			else
 			{
 				_state = Parser::HEADER_FIELDS;
-				// m_headerFieldsParser.consume(c);
 			}
 
 			break;
@@ -213,7 +205,7 @@ void Parser::parse(char c) {
 
 		case Parser::BODY:
 			_state = Parser::BODY_DECODE;
-			_bodyDecoder = HTTPBodyEncoding::decoderFor(this->_header);
+			_bodyDecoder = HTTPBodyEncoding::decodeSelector(this->_header);
 			if (_bodyDecoder == NULL) {
 				_state = Parser::END;
 				break;
@@ -222,24 +214,13 @@ void Parser::parse(char c) {
 				break;
 		case Parser::BODY_DECODE:
 		{
-			std::cout << "body!2" << std::endl;
 			size_t consumed = 0;
-			std::cout << _client.in().storage();
-						std::cout << "body!2" << std::endl;
 
-			bool finished = _bodyDecoder->consume(_client.in().storage(), _client.body(), consumed, _isMax);
-
-			// _client.in().skip(consumed);
+			bool finished = _bodyDecoder->parse(_client.in().storage(), _client.body(), consumed, _isMax);
 			_client.in().clear();
-			// m_totalSize += consumed;
-
-			// if (m_maxBodySize != -1 && (long long)m_client.body().size() > m_maxBodySize) // TODO This kept everything in RAM...
-			// {
-			// 	m_max = true;
-			// 	if (finished)
-			// 		throw HTTPRequestPayloadTooLargeException();
-			// }
-
+			if (this->_clientMaxBodySize != 0 && (unsigned long)_client.body().size() > this->_clientMaxBodySize) {
+					throw PayloadTooBigException();
+			}
 			if (finished)
 				this->_state = Parser::END;
 			break;
@@ -409,4 +390,13 @@ void Parser::hState(int state) {
 
 const Header& Parser::header(void) const {
 	return (this->_header);
+}
+
+
+unsigned long Parser::clientMaxBodySize(void) const {
+	return (this->_clientMaxBodySize);
+}
+
+void Parser::clientMaxBodySize(unsigned long size) {
+	this->_clientMaxBodySize = size;
 }

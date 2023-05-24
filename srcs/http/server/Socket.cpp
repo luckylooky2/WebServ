@@ -55,7 +55,6 @@ Socket* Socket::accept(InetAddress* address) const {
 }
 
 ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
-	std::cout << "socket:recv : " << this->getFd() << std::endl;
 	this->validateNotClosed();
 	ssize_t ret;
 	if ((ret = ::recv(this->getFd(), buffer, length, flags)) == -1)

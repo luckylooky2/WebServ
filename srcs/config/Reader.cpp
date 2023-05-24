@@ -13,7 +13,9 @@ Reader::Reader(const Reader &other) : _parser(other._parser) {}
 Reader::~Reader() {}
 
 Reader& Reader::operator=(const Reader &other) {
-	(void)other;
+	if (this != &other) {
+		this->_parser = other._parser;
+	}
 	return (*this);
 }
 

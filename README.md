@@ -19,6 +19,7 @@ https://blog.devkcr.org/172
 https://helloworld-88.tistory.com/215
 accept 두번째 인자로 client의 ip, port 정보를 받을 수 있나 ?
 */
+//http://egloos.zum.com/hanulnun/v/2694379
 
 ## 평가준비
 

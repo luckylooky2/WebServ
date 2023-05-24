@@ -9,7 +9,7 @@ bool Delete::doMethod(Request& req, Response& res, Client& cli) {
 	(void)cli;
 	File file(req.targetFile());
 
-	if (!file.exists())
+	if (!file.exists() || !file.isFile())
 		res.status(HTTPStatus::STATE[HTTPStatus::NO_CONTENT]);
 	else {
 		try {

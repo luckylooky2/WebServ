@@ -1,7 +1,7 @@
 #include "ServerBlock.hpp"
 #include <map>
 
-ServerBlock::ServerBlock(void) : _listen(0), _serverName() {}
+ServerBlock::ServerBlock(void) : _listen(0), _serverName(), _clientMaxBodySize(0) {}
 
 ServerBlock::ServerBlock(const ServerBlock& other) {
 	if (this != &other) {
@@ -69,6 +69,14 @@ void ServerBlock::setCgi(std::string str) {
 	this->_cgi.second = str.substr(ret + 1);
 }
 
+void ServerBlock::setClientMaxBodySize(std::string str) {
+	this->_clientMaxBodySize = (unsigned long)::strtol(str.c_str(), NULL, 10);
+}
+
+unsigned long ServerBlock::getClientMaxBodySize(void) const {
+	return (this->_clientMaxBodySize);
+}
+
 std::pair<std::string, std::string> ServerBlock::getCgi(void) const {
 	return (this->_cgi);
 }
@@ -95,6 +103,7 @@ void ServerBlock::check(std::string key, std::string value) {
 	_map["root"] = &ServerBlock::setRoot;
 	_map["cgi"] = &ServerBlock::setCgi;
 	_map["index"] = &ServerBlock::setIndex;
+	_map["client_max_body_size"] = &ServerBlock::setClientMaxBodySize;
 
 	_pos = _map.find(key);
 	if (_pos != _map.end()) {

@@ -43,16 +43,14 @@ bool File::exists() const {
 }
 
 bool File::isFile() const {
-	std::cout <<"111111" << std::endl;
 	return (S_ISREG(this->stat().st_mode));
 }
 
-bool File::isDir() const {std::cout <<"1111121" << std::endl;
+bool File::isDir() const {
 	return (S_ISDIR(stat().st_mode));
 }
 
 bool File::isExecutable() const {
-	std::cout <<"1111113" << std::endl;
 	return (stat().st_mode & S_IXUSR);
 }
 
@@ -66,9 +64,6 @@ bool File::create() {
 	{
 		std::string newPath = copy.substr(0, found);
 		std::string remainedPath = copy.substr(found + 1, std::string::npos);
-		std::cout << "newPathnewPath : " << newPath << std::endl;
-		std::cout << "remainedPathremainedPath : " << remainedPath << std::endl;
-		std::cout << "previousStrpreviousStrpreviousStr : " << previousStr << std::endl;
 		if (newPath == "./" || newPath == "/")
 		{
 			previousStr = newPath;
@@ -76,9 +71,7 @@ bool File::create() {
 		}
 		else
 		{
-			std::cout << "previousStr + + newPath : " << (previousStr + newPath) << std::endl;
 			File file(previousStr + "/" + newPath);
-			std::cout << "previousStr + + newPath : " << file.path().c_str()<< std::endl;
 			if (!file.exists())
 				::mkdir(file.path().c_str(), 0777);
 			previousStr = newPath;
@@ -103,7 +96,6 @@ FileDescriptor* File::open(int flags, mode_t mode) const {
 }
 
 void File::remove(void) const {
-	std::cout << " File::remov" << this->path() << std::endl;
 
 	if (this->isDir())
 		::rmdir(this->_path.c_str());
@@ -155,7 +147,6 @@ std::list<File> File::list(void) const {
 
 std::string File::getExtension() {
 	std::string::size_type index = indexOfExtension();
-	std::cout << "index : " << index << " " << this->_path.substr(index + 1) << std::endl;
 	if (index == std::string::npos)
 		return ("");
 	return (this->_path.substr(index));
@@ -167,7 +158,6 @@ std::string::size_type File::indexOfSeparator(void) {
 
 std::string::size_type File::indexOfExtension() {
 	std::string::size_type extensionPos = this->_path.rfind(EXTENSION);
-	std::cout << "extensionPos : " << extensionPos << " " << indexOfSeparator() << " " << std::string::npos <<  std::endl;
 	if (this->_path.rfind(SLASH) > std::string::npos)
 		return (std::string::npos);
 	else  {
@@ -198,8 +188,7 @@ std::string File::concatRootAndResource(const std::string& root, const std::stri
 	bool bStart = false;
 	bool bEnd = false;
 	char slash = '/';
-		// std::cout << "concatRootAndResource : " << root << std::endl;
-		// std::cout << "concatRootAndResource : " << resource << std::endl;
+	
 	if (resource.c_str()[0] == slash)
 		bStart = true;
 	if (root.c_str()[root.length() - 1] == slash)

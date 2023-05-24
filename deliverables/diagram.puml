@@ -21,10 +21,17 @@ IMethod <--righto Method
 class Delete
 class Get
 class Post
+class Head
+class Put
 
 IMaker <---righto "<<queue>>" ResponseMaker
 IMaker <|.. MethodMaker
 IMaker <|.. CGIMaker
+IMaker <|.. DefaultPageMaker
+IMaker <|.. EndResponseMaker
+IMaker <|.. ErrorPageMaker
+IMaker <|.. IntorceptorMaker
+
 interface IMaker {
 	make()
 }
@@ -33,10 +40,8 @@ class MethodMaker {
 	make()
 }
 class ResponseMaker {
-	Request:_req
-	Response : _res
-	Client : _client
 	queue<IMaker*> : _maker
+	setExcute()
 	executeMaker()
 }
 
@@ -44,6 +49,8 @@ class ResponseMaker {
 IMethod <|.. Get
 IMethod <|.. Post
 IMethod <|.. Delete
+IMethod <|.. Head
+IMethod <|.. Put
 
 KqueueManage o--left> RWCallback
 
@@ -52,8 +59,18 @@ FileDescriptor <|-- Socket
 Storage <|- SocketStorage
 
 RWCallback <|.. Server
+RWCallback <|.. ResponseByCGI
+RWCallback <|.. ResponseByFile
+RWCallback <|.. CgiTask
+RWCallback <|.. PutTask
 RWCallback <|...left Client
-'KqueueManage 
+
+
+Response o--right> IBody
+IBody <|.. ResponseByCGI
+IBody <|.. ResponseByFile
+IBody <|.. ResponseByString
+
 
 Resonse o--right> HTTPStatus
 
@@ -99,6 +116,18 @@ class StatusLine
 class KqueueManage
 
 class CGIMaker {
+	make() 
+}
+class DefaultPageMaker {
+	make()
+}
+class EndResponseMaker {
+	make()
+}
+class ErrorPageMaker {
+	make()
+}
+class IntorceptorMaker {
 	make()
 }
 

@@ -6,13 +6,6 @@
 #include "ServerBlock.hpp"
 
 class RootBlock {
-public:
-	// typedef void (RootBlock::*FuncPointer)(std::string);
-	// typedef std::map<std::string, FuncPointer> FuncMap;
-	// typedef FuncMap::iterator FuncMapIter;
-	// FuncMap							_map;
-	// FuncMapIter						_pos;
-
 private:
 	std::list<ServerBlock*>			_serverBlockList;
 	int								_maxConnection;

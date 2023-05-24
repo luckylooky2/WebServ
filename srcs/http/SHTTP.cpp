@@ -12,6 +12,8 @@ const int			SHTTP::DEFAULT_TIMEOUT = 30;
 const std::string	SHTTP::DEFAULT_TMP_FILE = "/tmp/" + SHTTP::APPLICATION_NAME;
 const int			SHTTP::DEFAULT_PORT = 8080;
 const std::string	SHTTP::DEFAULT_HOST = "localhost";
+const unsigned long	SHTTP::DEFAULT_MAX_BODY_SIZE = 1 * 1024 * 1024;
+
 
 std::string SHTTP::VERSION() {
 	std::stringstream version ;

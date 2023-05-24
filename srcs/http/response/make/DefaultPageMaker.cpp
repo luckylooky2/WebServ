@@ -55,7 +55,6 @@ void DefaultPageMaker::make(Client& client, Request& req, Response& res, Respons
 
 	if (file.exists() && file.isFile()) {
 		req.resource(file.name());
-		std::cout << "header().contentLength" << std::endl;
 		res.header().contentLength(10);
 	}
 	maker.executeMaker();
