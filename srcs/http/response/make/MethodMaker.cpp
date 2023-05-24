@@ -7,7 +7,6 @@
 #include "../method/IMethod.hpp"
 #include <iostream>
 #include <string>
-
 #include "../method/Method.hpp"
 
 

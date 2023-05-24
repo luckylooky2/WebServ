@@ -9,7 +9,6 @@
 #include "../Response.hpp"
 #include "../../request/Request.hpp"
 
-// class IMaker;
 class ResponseMaker;
 
 class MethodMaker : public IMaker, public Singleton<MethodMaker> {

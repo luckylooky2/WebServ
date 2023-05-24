@@ -25,7 +25,6 @@ CGITask::CGITask(Client& client, CGI& cgi) :
 		_out(*FileDescriptor::create(_cgi.out())),
 		wroteBodyUpTo(), _running(true) {
 	IMethod* method = Method::METHOD[client.parser().method()];
-	std::cout << "CGITask::CGITask(Client& client, CGI& cgi)  : " << _out.getFd() << " " << method->getHasBody() << _cgi.file().path()  << std::endl;
 	KqueueManage::instance().create(this->_cgi.in(), *this, _client.server().getSocket()->getFd());
 	KqueueManage::instance().create(this->_out, *this, _client.server().getSocket()->getFd());
 	if (method->getHasBody()) {
@@ -37,8 +36,6 @@ CGITask::CGITask(Client& client, CGI& cgi) :
 }
 
 CGITask::~CGITask(void) {
-		std::cout << "CGITask::~CGITask : " << _cgi.in().getFd() << std::endl;
-// std::cout << _cgi.file().path() << std::endl;
 	this->_cgi.kill();
 	KqueueManage::instance().delEvent(_cgi.in().getFd());
 	KqueueManage::instance().delEvent(_cgi.out().getFd());
@@ -51,8 +48,6 @@ bool CGITask::running() {
 }
 
 bool CGITask::send(FileDescriptor& fd) {
-	std::cout << "CGITask::send(FileDescriptor& fd) : " << _client.body().c_str() << "|" << std::endl;
-	std::cout << wroteBodyUpTo << " " << _client.body().length() << std::endl;
 
 	if (_cgi.in().isClosed())
 		return (true);
@@ -63,7 +58,6 @@ bool CGITask::send(FileDescriptor& fd) {
 	}
 
 	ssize_t wrote = fd.write(_client.body().c_str() + wroteBodyUpTo, _client.body().length() - wroteBodyUpTo);
-	std::cout << "wroteBodyUpTo :  " << wrote << std::endl;
 
 	if (wrote <= 0) {
 		this->_cgi.in().close();
@@ -72,8 +66,6 @@ bool CGITask::send(FileDescriptor& fd) {
 	}
 
 	wroteBodyUpTo += wrote;
-	std::cout << "wroteBodyUpTo :  " << wroteBodyUpTo << std::endl;
-	std::cout << "wroteBodyUpTo :  " << _client.body().length() << std::endl;
 	if (wroteBodyUpTo == _client.body().length()) {
 		_cgi.in().close();
 		KqueueManage::instance().delEvent(_cgi.in().getFd());
@@ -84,10 +76,7 @@ bool CGITask::send(FileDescriptor& fd) {
 
 bool CGITask::recv(FileDescriptor& fd) {
 	(void)fd;
-	std::cout << "CGITask::recv(FileDescriptor& fd) : " << "|"  << std::endl;
 
-	// char buf[SHTTP::DEFAULT_READSIZE];
-	// this->_out.lseek(0, SEEK_SET);
 	std::string ret = this->_out.readString();
 	this->_out.store(ret);
 	if (ret.empty()) {
@@ -97,52 +86,35 @@ bool CGITask::recv(FileDescriptor& fd) {
 		return (true);
 	}
 
-	// if (r == 0 && _out.storage().empty()) {
-	// 	_client.response().status(HTTPStatus::STATE[HTTPStatus::GATEWAY_TIMEOUT]);
-	// 	_client.maker().executeMaker();
-	// 	return (true);
-	// }
-
 	Parser parser(_client);
-	std::cout << "parser !!!!!!!!!!!!!!!!" << std::endl;
-    std::cout << parser.state() << std::endl;
     parser.hState(Parser::FIELD);
 	if (parser.state() != Parser::HEND) {
 		char c;
-		// bool isParse = false;
-	try {
-		std::cout << "start" << std::endl;
-		while (this->_out.getC(c)) {
-			this->_out.next();
-			parser.headerParse(c);
-			if (parser.hState() == Parser::HEND) {
-				std::cout << "end!!!" << std::endl;
-				// isParse = true;
+		try {
+			while (this->_out.getC(c)) {
+				this->_out.next();
+				parser.headerParse(c);
+				if (parser.hState() == Parser::HEND) {
+					parser.header().get(Header::STATUS);
+					_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
 
-				parser.header().get(Header::STATUS);
-				_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
-
-				break;
+					break;
+				}
 			}
+
+			this->_client.response().header().contentLength(this->_out.storage().size());
+			this->_client.response().body(new ResponseByCGI(this->_client, *this));
+			_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
+			_client.maker().executeMaker();
+			KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+			return (false);
+		} catch (Exception &exception) {
+			this->_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
+			this->_client.maker().executeMaker();
+
+			KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+			return (true);
 		}
-
-		this->_client.response().header().contentLength(this->_out.storage().size());
-		// this->_client.response().header().append(Header::CONTENT_LENGTH, Base::toString(r, 10));
-		this->_client.response().body(new ResponseByCGI(this->_client, *this));
-		_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
-		_client.maker().executeMaker();
-		// this->cgi().file().remove();
-
-		KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
-		return (false);
-	}
-	catch (Exception &exception) {
-		this->_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
-		this->_client.maker().executeMaker();
-
-		KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
-		return (true);
-	}
 	}
 
 	if (this->_out.isReadCompleted()) {

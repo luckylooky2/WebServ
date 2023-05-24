@@ -6,7 +6,7 @@
 class IHTTPBodyDecoder {
 public:
 	virtual ~IHTTPBodyDecoder(void);
-	virtual bool consume(const std::string &in, std::string &out, size_t &consumed, bool max) = 0;
+	virtual bool parse(const std::string &in, std::string &out, size_t &consumed, bool max) = 0;
 	std::string decode(const std::string &input, bool max);
 	virtual void cleanup();
 

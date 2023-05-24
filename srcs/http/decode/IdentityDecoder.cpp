@@ -9,7 +9,7 @@ IdentityDecoder::IdentityDecoder(bool isAllocated, long long contentLength) :
 
 IdentityDecoder::~IdentityDecoder(void) {}
 
-bool IdentityDecoder::consume(const std::string &in, std::string &out, size_t &consumed, bool max) {
+bool IdentityDecoder::parse(const std::string &in, std::string &out, size_t &consumed, bool max) {
 	consumed = std::min(in.size(), size_t(_contentLength - _consumed));
 
 	if (!max)

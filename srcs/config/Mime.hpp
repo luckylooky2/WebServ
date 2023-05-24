@@ -7,7 +7,6 @@
 #include <map>
 #include "Reader.hpp"
 
-//http://egloos.zum.com/hanulnun/v/2694379
 // { type : extension1, extension2 .. }
 class Mime {
 public:

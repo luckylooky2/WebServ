@@ -1,5 +1,4 @@
 #include "Parser.hpp"
-
 #include "../server/Client.hpp"
 #include "../exception/UnsupportedVersionException.hpp"
 #include "../exception/TooBigHeaderException.hpp"
@@ -41,12 +40,6 @@ void Parser::parse(char c) {
 			}
 			else
 			{
-				// if (!ft::isupper(c))
-				// 	throw Exception("Method is only upper-case letter");
-
-				// if (_method.length() > 20)
-				// 	throw Exception("Method is over 20 characters");
-
 				_state = Parser::METHOD;
 				_method += c;
 			}
@@ -187,7 +180,6 @@ void Parser::parse(char c) {
 			else
 			{
 				_state = Parser::HEADER_FIELDS;
-				// m_headerFieldsParser.consume(c);
 			}
 
 			break;
@@ -222,14 +214,10 @@ void Parser::parse(char c) {
 				break;
 		case Parser::BODY_DECODE:
 		{
-			std::cout << "body!2" << std::endl;
 			size_t consumed = 0;
-			std::cout << _client.in().storage();
-						std::cout << "body!2" << std::endl;
 
-			bool finished = _bodyDecoder->consume(_client.in().storage(), _client.body(), consumed, _isMax);
+			bool finished = _bodyDecoder->parse(_client.in().storage(), _client.body(), consumed, _isMax);
 			_client.in().clear();
-			std::cout << "this->_clientMaxBodySize : " << this->_clientMaxBodySize << " " << _client.body().size()  << std::endl;
 			if (this->_clientMaxBodySize != 0 && (unsigned long)_client.body().size() > this->_clientMaxBodySize) {
 					throw PayloadTooBigException();
 			}

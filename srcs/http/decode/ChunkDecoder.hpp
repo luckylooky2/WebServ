@@ -35,7 +35,7 @@ public:
 	~ChunkDecoder();
 
 	bool
-	consume(const std::string &in, std::string &out, size_t &consumed, bool max);
+	parse(const std::string &in, std::string &out, size_t &consumed, bool max);
 
 	void
 	cleanup();
@@ -43,9 +43,7 @@ public:
 	ChunkDecoder::State
 	state();
 
-	static inline bool 
-	isValidCharacter(char c)
-	{
+	static inline bool  isValidCharacter(char c) {
 		return (std::isalnum(c));
 	}
 

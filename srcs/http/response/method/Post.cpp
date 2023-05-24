@@ -12,14 +12,10 @@ bool Post::doMethod(Request &req, Response &res, Client &cli) {
 	}
 
 	File targetFile(req.targetFile());
-	std::cout << "targetFiletargetFile : " << std::endl;
-	std::cout << targetFile.path() << std::endl;
 	bool justCreated = false;
 	std::string out;
 	if (targetFile.exists()) {
 		if (targetFile.isDir() || !targetFile.isFile()) {
-			std::cout << "req.url().fullUrl()" << req.url().fullUrl() << std::endl;
-			std::cout << Get::instance()->listing(req.url(), targetFile) << std::endl;
 			res.body(Get::instance()->listing(req.url(), targetFile));
 			res.header().allow("GET");
 			res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
@@ -28,7 +24,6 @@ bool Post::doMethod(Request &req, Response &res, Client &cli) {
 	} else {
 		try {
 			targetFile.create();
-			// res.headers().contentLocation(targetFile.path());
 			justCreated = true;
 		}
 		catch (Exception &exception) {

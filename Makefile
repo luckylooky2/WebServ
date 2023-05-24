@@ -20,9 +20,9 @@ SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
 				srcs/address/InetAddress.cpp \
 				srcs/util/Storage.cpp srcs/http/server/SocketStorage.cpp \
 				srcs/http/request/Request.cpp \
-				srcs/http/parse/Parser.cpp srcs/http/parse/PathParser.cpp \
 				srcs/http/response/IBody.cpp srcs/http/response/ResponseByString.cpp srcs/http/response/ResponseByFile.cpp srcs/http/response/ResponseByCGI.cpp \
-				srcs/util/Time.cpp srcs/util/Base64.cpp srcs/util/Base.cpp srcs/util/Replace.cpp srcs/util/SEnvironment.cpp srcs/util/Common.cpp \
+				srcs/util/Time.cpp srcs/http/parse/Parser.cpp srcs/http/parse/PathParser.cpp \
+				srcs/util/Base64.cpp srcs/util/Base.cpp srcs/util/Replace.cpp srcs/util/SEnvironment.cpp srcs/util/Common.cpp \
 				srcs/http/decode/ChunkDecoder.cpp srcs/http/decode/IdentityDecoder.cpp srcs/http/decode/IHTTPBodyDecoder.cpp \
 				srcs/http/encode/ChunkEncoder.cpp srcs/http/encode/HTTPBodyEncoding.cpp srcs/http/encode/IdentityEncoder.cpp srcs/http/encode/IHTTPBodyEncoder.cpp \
 				srcs/view/Page.cpp

@@ -18,8 +18,6 @@ bool HEAD::doMethod(Request& req, Response& res, Client& cli) {
 	(void)cli;
 
 	File targetFile(req.targetFile());
-	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;
-	std::cout << targetFile.path() << std::endl;
 
 	if (res.body()) {
 		return (true);
@@ -32,7 +30,6 @@ bool HEAD::doMethod(Request& req, Response& res, Client& cli) {
 
 	if (targetFile.isFile()) {
 		std::size_t contentLength = targetFile.size();
-		std::cout << "contentLength " << std::endl;
 		res.header().contentLength(contentLength);
 	}
 	res.body(NULL);

@@ -13,7 +13,7 @@ ChunkDecoder::ChunkDecoder(bool isAllocated) :
 
 ChunkDecoder::~ChunkDecoder() {}
 
-bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &consumed, bool max) {
+bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consumed, bool max) {
 	std::string copy = in;
 	
 	if (in.empty())

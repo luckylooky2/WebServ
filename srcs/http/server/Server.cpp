@@ -43,7 +43,6 @@ Socket* Server::connect(Socket* serverSocket) {
 	socket->setNonBlock();
 	Client& client = *(new Client(socketAddress, *this, *socket));
 	this->_clients.insert(std::make_pair(socket->getFd(), &client));
-	std::cerr << "Client::_s_connCnt : " << Client::_s_connCnt << " " << SHTTP::DEFAULT_MAX_ACTIVE_CLIENT << std::endl;
 
 	if (Client::_s_connCnt > SHTTP::DEFAULT_MAX_ACTIVE_CLIENT) {
 		Client::deny(*_clients.find(socket->getFd())->second);
@@ -53,16 +52,11 @@ Socket* Server::connect(Socket* serverSocket) {
 
 void Server::disconnect(Client& client) {
 	_clients.erase(client.socket().getFd());
-	std::cout << "disconnect " << std::endl;
 }
 
 
 bool Server::recv(FileDescriptor &fd) {
 	(void)fd;
-	// std::cout << "accete fd : " << fd.getFd() << std::endl;
-	// Socket &serverSocket = static_cast<Socket&>(fd);
-	// Socket* socket = this->connect(&serverSocket);
-	// std::cerr << "Client::_s_connCnt : " << Client::_s_connCnt << " " << SHTTP::DEFAULT_MAX_ACTIVE_CLIENT << std::endl;
 	return (false);
 }
 
@@ -79,11 +73,9 @@ void Server::checkTimeout(void) {
 
 	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end();) {
 		Client& client = *(*it).second;
-		std::cout<<"*************Server::checkTimeout : " << (*it).first<< " " << client.lastTime()  << std::endl;
 
 		it++;	
 		if (client.cgiWrite() && client.cgiWrite()->timeoutTouch()) {
-            std::cout<<" client.cgiWrite()->timeoutTouch(" << std::endl;
 			client.updateTime();
 		} else if (client.lastTime() + timeout < now) {
 			this->clients().erase(client.socket().getFd());

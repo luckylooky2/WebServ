@@ -83,9 +83,6 @@ Header& Header::mimeHTML(void) {
 }
 
 
-/**
- @ref RFC 7230 - 3.2.2 
-*/
 Header& Header::append(const std::string &key, const std::string &value, bool folding) {
 	static std::string comaAndASpace = ", ";
 

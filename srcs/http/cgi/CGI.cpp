@@ -52,7 +52,6 @@ CGI::CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out, File& file) :
 		_pid(pid), _in(in), _out(out), _file(file), _killed(false) {}
 
 CGI::~CGI(void) {
-	std::cout << "CGI::~CGI : " << std::endl; 
 	delete &_in;
 	delete &_out;
 	kill();
@@ -140,20 +139,6 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 	if (client.response().cgiExtension().compare(".php") == 0)
 		env.appendOne(REDIRECT_STATUS, "200");
 
-	// const AuthBlock* authBlockOpt = request.authBlock();
-	// if (authBlockOpt.present())	
-	// {
-	// 	const AuthBlock &authBlock = *authBlockOpt.get();
-
-	// 	env.appendOne(ENV_AUTH_TYPE, authBlock.prettyType());
-
-	// 	const BasicAuthBlock *basicAuthBlock = dynamic_cast<BasicAuthBlock const*>(&authBlock);
-	// 	if (basicAuthBlock)
-	// 	{
-	// 		env.appendOne(ENV_REMOTE_USER, basicAuthBlock->user());
-	// 		env.appendOne(ENV_REMOTE_IDENT, basicAuthBlock->user());
-	// 	}
-	// }
 	const Header& header = client.parser().header();
 	for (Header::mconst_iterator it = header.begin(); it != header.end(); it++)
 		env.appendOne("HTTP_" + Base::toUpper(Replace::replace(Replace::replace(it->first, "=", "_"), "-", "_")), it->second.front());
@@ -188,8 +173,6 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 
 		char *const argv[] = {const_cast<char*>(path.c_str()), const_cast<char*>(file.c_str()), NULL};
 		::execve(path.c_str(), argv, envp);
-		
-		std::cerr << "Status: 500\r\n\r\nFAILED TO RUN CGI\n" << path << "\n" << std::strerror(errno) << std::flush;
 		::exit(1);
 		return (NULL);
 	} else {
