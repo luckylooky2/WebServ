@@ -13,7 +13,6 @@ class CGITask : public RWCallback {
 	private:
 		Client&					_client;
 		CGI&					_cgi;
-		FileDescriptor&			_out;
 		size_t					wroteBodyUpTo;
 		bool					_running;
 	private:

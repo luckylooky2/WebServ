@@ -22,16 +22,16 @@ class ResponseByCGI;
 
 CGITask::CGITask(Client& client, CGI& cgi) :
 		_client(client), _cgi(cgi),
-		_out(*FileDescriptor::create(_cgi.out())),
 		wroteBodyUpTo(), _running(true) {
 	IMethod* method = Method::METHOD[client.parser().method()];
 	KqueueManage::instance().create(this->_cgi.in(), *this, _client.server().getSocket()->getFd());
-	KqueueManage::instance().create(this->_out, *this, _client.server().getSocket()->getFd());
 	if (method->getHasBody()) {
 		KqueueManage::instance().setEvent(_cgi.in().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 	}
 	else
 		this->_cgi.in().close();
+		
+	KqueueManage::instance().create(this->_cgi.out(), *this, _client.server().getSocket()->getFd());
 	KqueueManage::instance().setEvent(_cgi.out().getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 }
 
@@ -39,7 +39,6 @@ CGITask::~CGITask(void) {
 	this->_cgi.kill();
 	KqueueManage::instance().delEvent(_cgi.in().getFd());
 	KqueueManage::instance().delEvent(_cgi.out().getFd());
-	delete &_out;
 	delete &_cgi;
 }
 
@@ -77,8 +76,8 @@ bool CGITask::send(FileDescriptor& fd) {
 bool CGITask::recv(FileDescriptor& fd) {
 	(void)fd;
 
-	std::string ret = this->_out.readString();
-	this->_out.store(ret);
+	std::string ret = _cgi.out().readString();
+	_cgi.out().store(ret);
 	if (ret.empty()) {
 		_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
 		_client.maker().executeMaker();
@@ -91,8 +90,8 @@ bool CGITask::recv(FileDescriptor& fd) {
 	if (parser.state() != Parser::HEND) {
 		char c;
 		try {
-			while (this->_out.getC(c)) {
-				this->_out.next();
+			while (_cgi.out().getC(c)) {
+				_cgi.out().next();
 				parser.headerParse(c);
 				if (parser.hState() == Parser::HEND) {
 					parser.header().get(Header::STATUS);
@@ -102,7 +101,7 @@ bool CGITask::recv(FileDescriptor& fd) {
 				}
 			}
 
-			this->_client.response().header().contentLength(this->_out.storage().size());
+			this->_client.response().header().contentLength(_cgi.out().storage().size());
 			this->_client.response().body(new ResponseByCGI(this->_client, *this));
 			_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
 			_client.maker().executeMaker();
@@ -117,7 +116,7 @@ bool CGITask::recv(FileDescriptor& fd) {
 		}
 	}
 
-	if (this->_out.isReadCompleted()) {
+	if (_cgi.out().isReadCompleted()) {
 		KqueueManage::instance().delEvent(_cgi.in().getFd());
 		return (true);
 	}
@@ -125,7 +124,7 @@ bool CGITask::recv(FileDescriptor& fd) {
 }
 
 bool CGITask::isDone() {
-	return (this->_out.isReadCompleted());
+	return (_cgi.out().isReadCompleted());
 }
 
 bool CGITask::hasReadHeaders() {
@@ -133,7 +132,7 @@ bool CGITask::hasReadHeaders() {
 }
 
 FileDescriptor& CGITask::out() {
-	return (this->_out);
+	return (_cgi.out());
 }
 
 bool CGITask::timeoutTouch() {

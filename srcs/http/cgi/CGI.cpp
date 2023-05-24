@@ -48,8 +48,8 @@ const std::string CGI::ENV_SERVER_PROTOCOL = "SERVER_PROTOCOL";
 const std::string CGI::ENV_SERVER_SOFTWARE = "SERVER_SOFTWARE";
 const std::string CGI::REDIRECT_STATUS = "REDIRECT_STATUS";
 
-CGI::CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out, File& file) :
-		_pid(pid), _in(in), _out(out), _file(file), _killed(false) {}
+CGI::CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out) :
+		_pid(pid), _in(in), _out(out), _killed(false) {}
 
 CGI::~CGI(void) {
 	delete &_in;
@@ -88,7 +88,16 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 	int inPipe[2];
 	if (::pipe(inPipe) == -1)
 		throw IOException("in pipe exception", errno);
+	int outPipe[2];
+	if (pipe(outPipe) == -1) {
+		int err = errno;
+		::close(inPipe[0]);
+		::close(inPipe[1]);
+		::close(outPipe[0]);
+		::close(outPipe[1]);
 
+		throw IOException("pipe (out)", err);
+	}
 	SEnvironment env = environment;
 	Request& request = client.request();
 
@@ -103,10 +112,6 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 	_targetFile->setNonBlock();
 	std::string buf = _targetFile->readString();
 	ReleaseResource::pointer<FileDescriptor>(_targetFile);
-
-  	File _tmp(SHTTP::DEFAULT_TMP_FILE + Base::toString(client.socket().getFd(), 10));
-  	FileDescriptor* _fileFd = _tmp.open(O_CREAT | O_RDWR | O_TRUNC , 0777);
-	_fileFd->setNonBlock();
 
     std::string appName;
     appName.append(APPLICATION_NAME).append("/").append(APPLICATION_VERSION);
@@ -166,32 +171,36 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 		::chdir(request.root().c_str());
 
 		::dup2(inPipe[0], 0);
-		::dup2(_fileFd->getFd(), 1);
+		::dup2(outPipe[1], 1);
 
 		::close(inPipe[1]);
-		::close(inPipe[0]);
+		::close(outPipe[0]);
 
 		char *const argv[] = {const_cast<char*>(path.c_str()), const_cast<char*>(file.c_str()), NULL};
 		::execve(path.c_str(), argv, envp);
 		::exit(1);
 		return (NULL);
 	} else {
+		::close(inPipe[0]);
+		::close(outPipe[1]);
 
 		if (client.body().empty())
         	write(inPipe[1],buf.c_str(),buf.size());
-			
+		
 		ReleaseResource::pointer2th<char>(envp);
 
-		::close(inPipe[0]);
 		FileDescriptor *stdin = NULL;
+		FileDescriptor *stdout = NULL;
 		CGI *cgi = NULL;
 		CGITask *cgiTask = NULL;
 
 		try {
 			stdin = new FileDescriptor(inPipe[1]);
+			stdout = new FileDescriptor(outPipe[0]);
             stdin->setNonBlock();
+            stdout->setNonBlock();
 
-			cgi = new CGI(pid, *stdin, *_fileFd, _tmp);
+			cgi = new CGI(pid, *stdin, *stdout);
 			cgiTask = new CGITask(client, *cgi);
 	
 			return (cgiTask);

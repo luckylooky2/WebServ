@@ -6,8 +6,6 @@ HTTPLocationInterpretor::HTTPLocationInterpretor() :
 		_state(NOT_STARTED),
 		_path(""),
 		_start(""),
-		_middleList(),
-		_middle(""),
 		_end(""),
 		_locationBlock(),
 		_firstChar('0'),
@@ -17,8 +15,6 @@ HTTPLocationInterpretor::HTTPLocationInterpretor(std::string path, const Locatio
 		_state(NOT_STARTED),
 		_path(path),
 		_start(""),
-		_middleList(),
-		_middle(""),
 		_end(""),
 		_locationBlock(locationBlock),
 		_firstChar('0'),
@@ -28,8 +24,6 @@ HTTPLocationInterpretor::HTTPLocationInterpretor(const HTTPLocationInterpretor &
 		_state(other._state),
 		_path(other._path),
 		_start(other._start),
-		_middleList(other._middleList),
-		_middle(other._middle),
 		_end(other._end),
 		_locationBlock(other._locationBlock),
 		_firstChar(other._firstChar),
@@ -42,8 +36,6 @@ HTTPLocationInterpretor& HTTPLocationInterpretor::operator =(const HTTPLocationI
 		_state = other._state;
 		_path = other._path;
 		_start = other._start;
-		_middleList = other._middleList;
-		_middle = other._middle;
 		_end = other._end;
 	}
 	return (*this);
