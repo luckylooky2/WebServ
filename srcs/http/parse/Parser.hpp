@@ -71,6 +71,7 @@ private:
 	bool _isMax;
 	int				_major;
 	int				_minor;
+	unsigned long	_clientMaxBodySize;
 	Parser(void);
 public:
 	Parser(Client& client);
@@ -89,6 +90,9 @@ public:
 	void hState(int state);
 
 	const Header& header(void) const;
+
+	unsigned long clientMaxBodySize(void) const;
+	void clientMaxBodySize(unsigned long size);
 
 };
 

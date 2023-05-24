@@ -97,6 +97,8 @@ public:
 	InetAddress inetAddress(void) const;
 	void updateTime(void);
 	unsigned long lastTime(void) const;
+	unsigned long clientMaxBodySize(const ServerBlock* serverBlock, const LocationBlock* locationBlock);
+
 public:
 	static void deny(Client& client);
 };

@@ -19,6 +19,8 @@ public:
 	MethodMaker& operator=(const MethodMaker& other);
 	virtual ~MethodMaker(void);
 	virtual void make(Client& client, Request& req, Response& res, ResponseMaker& maker);
+	unsigned long clientMaxBodySize(const ServerBlock* serverBlock, const LocationBlock* locationBlock);
+	std::string getAllowMethod(Request& req) const;
 };
 
 #endif

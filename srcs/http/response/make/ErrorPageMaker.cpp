@@ -49,12 +49,9 @@ void ErrorPageMaker::make(Client& client, Request& req, Response& res, ResponseM
 
 	const HTTPStatus::StateType state = res.status();
 	if (state.first / 100 != 4 && state.first / 100 != 5) {
-		maker.executeMaker();
+		if (state.first != 405)
+			maker.executeMaker();
 		return ;
-	}
-	if (state.first == 405) {
-		maker.executeMaker();
-		return ;	
 	}
 
 	// if (response.body() && response.body()->isSelfManaged())

@@ -3,6 +3,7 @@
 #include "../../iom/KqueueManage.hpp"
 #include "../exception/UnsupportedVersionException.hpp"
 #include "../exception/TooBigHeaderException.hpp"
+#include "../exception/PayloadTooBigException.hpp"
 
 int Client::_s_connCnt = 0;
 
@@ -192,6 +193,8 @@ bool Client::progressHead(void) {
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::HTTP_VERSION_NOT_SUPPORTED]);
 		} catch (TooBigHeaderException& exception) {
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::REQUEST_HEADER_FIELDS_TOO_LARGE]);
+		} catch (PayloadTooBigException& exception) {
+			this->_res.status(HTTPStatus::STATE[HTTPStatus::PAYLOAD_TOO_LARGE]);
 		} catch (Exception &exception) {
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
 		}
@@ -206,6 +209,10 @@ bool Client::progressHead(void) {
 }
 
 bool Client::progressBody(void) {
+	
+	// this->parser().clientMaxBodySize(clientMaxBodySize(this->_req.serverBlock(), this->_req.locationBlock()));
+			
+
 	if (!this->_in.storage().empty()) {
 		try {
 			_parser.parse(0);
@@ -219,10 +226,13 @@ bool Client::progressBody(void) {
 					// this->_maker .doChainingOf(FilterChain::S_AFTER);
 				// }
 				// m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
-				// this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+				if (this->_res.status().second.empty())
+					this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
 				// KqueueManage::instance().setEvent(this->_socket.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 				return (true);
 				// }
+		} catch (PayloadTooBigException& exception) {
+			this->_res.status(HTTPStatus::STATE[HTTPStatus::PAYLOAD_TOO_LARGE]);
 		} catch (Exception &exception) {
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
 			this->_maker.setMaker();
@@ -319,4 +329,12 @@ void Client::deny(Client& client) {
 	client.maker().setLastMaker();
 	client.maker().executeMaker();
 	KqueueManage::instance().setEvent(client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+}
+
+unsigned long Client::clientMaxBodySize(const ServerBlock* serverBlock, const LocationBlock* locationBlock) {
+	if (locationBlock && locationBlock->getClientMaxBodySize() > 0)
+		return (locationBlock->getClientMaxBodySize());
+	if (serverBlock && serverBlock->getClientMaxBodySize() > 0)
+		return (serverBlock->getClientMaxBodySize());
+	return (SHTTP::DEFAULT_MAX_BODY_SIZE);
 }

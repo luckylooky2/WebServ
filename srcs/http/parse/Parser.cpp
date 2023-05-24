@@ -3,13 +3,14 @@
 #include "../server/Client.hpp"
 #include "../exception/UnsupportedVersionException.hpp"
 #include "../exception/TooBigHeaderException.hpp"
+#include "../exception/PayloadTooBigException.hpp"
 #include "../../util/Base.hpp"
 
 class Client;
 
 long Parser::headerMaxLength = 8 * 1024;
 
-Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client), _major(0), _minor(0) {
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED), _pathParser(), _headerSize(0), _header(), _bodyDecoder(), _client(client), _major(0), _minor(0), _clientMaxBodySize(0) {
 	_isMax = false;
 	_hState = Parser::FIELD;
 }
@@ -32,7 +33,6 @@ void Parser::parse(char c) {
 		}
 		case Parser::METHOD:
 		{
-			// m_max = false;
 			if (c == ' ')
 			{
 				if (_state == Parser::NOT_STARTED)
@@ -228,18 +228,11 @@ void Parser::parse(char c) {
 						std::cout << "body!2" << std::endl;
 
 			bool finished = _bodyDecoder->consume(_client.in().storage(), _client.body(), consumed, _isMax);
-
-			// _client.in().skip(consumed);
 			_client.in().clear();
-			// m_totalSize += consumed;
-
-			// if (m_maxBodySize != -1 && (long long)m_client.body().size() > m_maxBodySize) // TODO This kept everything in RAM...
-			// {
-			// 	m_max = true;
-			// 	if (finished)
-			// 		throw HTTPRequestPayloadTooLargeException();
-			// }
-
+			std::cout << "this->_clientMaxBodySize : " << this->_clientMaxBodySize << " " << _client.body().size()  << std::endl;
+			if (this->_clientMaxBodySize != 0 && (unsigned long)_client.body().size() > this->_clientMaxBodySize) {
+					throw PayloadTooBigException();
+			}
 			if (finished)
 				this->_state = Parser::END;
 			break;
@@ -409,4 +402,13 @@ void Parser::hState(int state) {
 
 const Header& Parser::header(void) const {
 	return (this->_header);
+}
+
+
+unsigned long Parser::clientMaxBodySize(void) const {
+	return (this->_clientMaxBodySize);
+}
+
+void Parser::clientMaxBodySize(unsigned long size) {
+	this->_clientMaxBodySize = size;
 }

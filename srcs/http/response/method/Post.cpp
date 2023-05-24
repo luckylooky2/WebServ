@@ -43,7 +43,7 @@ bool Post::doMethod(Request &req, Response &res, Client &cli) {
 		fd.lseek(0, SEEK_END);
 	cli.fileWrite(*(new PutTask(cli, fd, justCreated)));
 
-	return (false);
+	return (true);
 }
 
 void Post::setHasBody(bool hasbody) {
