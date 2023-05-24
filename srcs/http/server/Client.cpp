@@ -87,17 +87,14 @@ bool Client::progressHead(void) {
 
 	char c;
 	while (this->_in.getC(c)) {
-		std::cout << c ;
 		this->_in.next();
 		bool exitParse = true;
 		try {
 			_parser.parse(c);
 
 			if (this->_parser.state() == Parser::END) {
-				std::cout << "in " << std::endl;
 				URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
 				_req = Request(_parser.header() ,StatusLine(), url);
-				std::cout << _parser.pathParser().path() << Method::METHOD[this->parser().method()] << std::endl;
 				if (!Method::METHOD[this->parser().method()]) {
 					this->_res.header().contentLength(0);
 					this->_res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
@@ -241,7 +238,6 @@ unsigned long Client::lastTime(void) const {
 }
 
 void Client::deny(Client& client) {
-	std::cout << "deny" << std::endl;
 	client.response().status(HTTPStatus::STATE[HTTPStatus::SERVICE_UNAVAILABLE]);
 	client.maker().setLastMaker();
 	client.maker().executeMaker();
