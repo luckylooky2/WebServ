@@ -22,7 +22,7 @@ class HTTPLocationInterpretor {
 		std::string _start;
 		std::list<std::string> _middleList;
 		std::string _middle;
-		std::string _end;;
+		std::string _end;
 		std::string _exact;
 		const LocationBlock *_locationBlock;
 

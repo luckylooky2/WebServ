@@ -13,17 +13,22 @@ HTTPFindLocation::HTTPFindLocation() :
 		_locationBlock() {}
 
 HTTPFindLocation::HTTPFindLocation(std::string clientPath, std::list<LocationBlock*> serverLocations) :
-		_clientPath(clientPath), _serverLocations(serverLocations), _locationBlock() {}
+		_clientPath(clientPath),
+		_serverLocations(serverLocations),
+		_locationBlock() {}
 
-HTTPFindLocation::HTTPFindLocation(const HTTPFindLocation& other) :
+HTTPFindLocation::HTTPFindLocation(const HTTPFindLocation &other) :
 		_clientPath(other._clientPath),
 		_serverLocations(other._serverLocations),
 		_locationBlock(other._locationBlock) {}
 
 HTTPFindLocation::~HTTPFindLocation(void) {}
 
-HTTPFindLocation& HTTPFindLocation::operator =(const HTTPFindLocation& other) {
-	if (this != &other) {
+HTTPFindLocation&
+HTTPFindLocation::operator =(const HTTPFindLocation &other)
+{
+	if (this != &other)
+	{
 		_clientPath = other._clientPath;
 		_serverLocations = other._serverLocations;
 		_locationBlock = other._locationBlock;
@@ -31,34 +36,56 @@ HTTPFindLocation& HTTPFindLocation::operator =(const HTTPFindLocation& other) {
 	return (*this);
 }
 
-HTTPFindLocation& HTTPFindLocation::location(const LocationBlock *locationBlock) {
+HTTPFindLocation&
+HTTPFindLocation::location(const LocationBlock *locationBlock)
+{
 	_locationBlock = locationBlock;
+
 	return (*this);
 }
 
-const LocationBlock* HTTPFindLocation::location(void) const {
+const LocationBlock*
+HTTPFindLocation::location(void) const
+{
 	return (_locationBlock);
 }
 
-HTTPFindLocation& HTTPFindLocation::parse(void) {
+#define FIND_BEST(possibleLocationList, it_PossibleLoc, ite_PossibleLoc,loc, apply)					\
+	while (it_PossibleLoc != ite_PossibleLoc)														\
+	{																								\
+		if (it_PossibleLoc->apply().size() > loc.begin()->start().size())							\
+		{																							\
+			loc.pop_back();																			\
+			loc.push_back(*it_PossibleLoc);															\
+		}																							\
+		it_PossibleLoc++;																			\
+	}																								\
+	it_PossibleLoc = possibleLocationList.begin();
+
+
+
+HTTPFindLocation&
+HTTPFindLocation::parse(void)
+{
 	std::list<LocationBlock*>::iterator it = _serverLocations.begin();
 	std::list<LocationBlock*>::iterator ite = _serverLocations.end();
 
 	int start;
-
+	int endIndicator;
 	std::size_t pos;
 	std::size_t new_pos;
 	int not_found_middle;
-	bool exactEnd = false;
 
 	std::list<HTTPLocationInterpretor> possibleLocationList;
-	std::list<HTTPLocationInterpretor> exactEndList;
 	
-	while (it != ite) {
+	
+	while (it != ite)
+	{
 		HTTPLocationInterpretor interpretor((*it)->getPath(), *it);
 
 		char c;
 		start = 0;
+		endIndicator = 0;
 		pos = 0;
 		new_pos = 0;
 		not_found_middle = 0;
@@ -66,10 +93,6 @@ HTTPFindLocation& HTTPFindLocation::parse(void) {
 		while (interpretor.next(c))
 			interpretor.parse(c);
 
-		if (!(interpretor.middleElement().empty())) {
-			interpretor.middleList(interpretor.middleElement());
-		}
-		
 		if (!(interpretor.exact().empty()))
 		{
 			if (interpretor.exact().compare(_clientPath) == 0 || interpretor.exact().compare(_clientPath + "/") == 0)
@@ -79,10 +102,10 @@ HTTPFindLocation& HTTPFindLocation::parse(void) {
 				continue;
 		}
 	
-		if (interpretor.firstChar() == '/') {
-	
+		if (interpretor.firstChar() != '*') {
 			if (!(interpretor.start().empty())) {
-				if (_clientPath.compare(0, interpretor.start().size(), interpretor.start()) == 0 || (_clientPath + "/").compare(0, interpretor.start().size(), interpretor.start()) == 0) {
+				if (_clientPath.compare(0, interpretor.start().size(), interpretor.start()) == 0 || (_clientPath + "/").compare(0, interpretor.start().size(), interpretor.start()) == 0)
+				{
 					start = 1;
 					pos = interpretor.start().size();
 				}
@@ -92,26 +115,55 @@ HTTPFindLocation& HTTPFindLocation::parse(void) {
 				}
 			}
 		}
-		else {
-			exactEnd = true;
-		}
+
 				
-		if (start) {
-			if (exactEnd) {
-				exactEndList.push_back(interpretor);
-			} else
+		if (!(interpretor.end().empty())) {
+			std::string end = interpretor.end();
+
+			int size = end.size();
+			int index = _clientPath.size() - size;
+		
+			if (index >= 0 && (_clientPath.compare(index, size, end) == 0 || (_clientPath + "/").compare(index, size, end) == 0)) {
+				endIndicator = 1;
+			}
+			else {
+				it++;
+				continue;
+			}
+		}
+
+		if (start || endIndicator)
+		{
 				possibleLocationList.push_back(interpretor);
 		}
 		it++;
 	}
-	std::list<HTTPLocationInterpretor> &listToCheck = possibleLocationList;
-	if (!exactEndList.empty())
-	{
-		listToCheck.clear();
-		listToCheck = exactEndList;
-	}
 
-	location(listToCheck.begin()->locationBlock());
+	std::list<HTTPLocationInterpretor> &listToCheck = possibleLocationList;
+
+	std::list<HTTPLocationInterpretor>::iterator it_listToCheck = listToCheck.begin();
+	std::list<HTTPLocationInterpretor>::iterator ite_listToCheck = listToCheck.end();
+
+	std::list<HTTPLocationInterpretor> loc;
+	loc.push_back(*it_listToCheck);
+	
+	FIND_BEST(listToCheck, it_listToCheck, ite_listToCheck, loc, start);
+
+	// while (it_listToCheck != ite_listToCheck)													
+	// {																								
+	// 	if (it_listToCheck-> loc.begin()->start().size())							
+	// 	{																							
+	// 		loc.pop_back();																			
+	// 		loc.push_back(*it_listToCheck);															
+	// 	}																							
+	// 	it_listToCheck++;																			
+	// }																								
+	// it_listToCheck = possibleLocationList.begin();
+
+	std::cout << "loc.size() : " << loc.size() << std::endl;
+	HTTPLocationInterpretor &bestLocation = *(loc.begin());
+	std::cout <<bestLocation.locationBlock()->getPath() << std::endl;
+	location(bestLocation.locationBlock());
 	
 	return (*this);
 }

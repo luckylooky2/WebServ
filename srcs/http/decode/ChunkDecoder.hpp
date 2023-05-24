@@ -18,8 +18,8 @@ enum State
 	};
 
 private:
-	bool m_isAllocated;
-	State m_state;
+	bool _isAllocated;
+	State _state;
 
 private:
 	ChunkDecoder();
@@ -50,10 +50,10 @@ public:
 	}
 
 private:
-	int m_sizeNb;
-	std::string m_sizeStr;
-	std::string m_parsedChunk;
-	long long m_totalSize;
+	int _sizeNb;
+	std::string _sizeStr;
+	std::string _parsedChunk;
+	long long _totalSize;
 };
 
 #endif

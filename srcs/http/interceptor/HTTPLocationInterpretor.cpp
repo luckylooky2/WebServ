@@ -58,7 +58,6 @@ bool HTTPLocationInterpretor::next(char &c) {
 }
 
 void HTTPLocationInterpretor::parse(char &c) {
-	std::cout << c;
 	switch (_state)
 	{
 		case NOT_STARTED:

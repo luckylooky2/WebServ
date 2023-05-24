@@ -8,7 +8,6 @@
 #include <string>
 #include "../../util/Base.hpp"
 
-
 class IHTTPBodyDecoder;
 
 class HTTPBodyEncoding {

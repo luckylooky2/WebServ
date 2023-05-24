@@ -6,9 +6,9 @@
 
 class IdentityDecoder : public IHTTPBodyDecoder {
 private:
-	bool m_isAllocated;
-	long long m_contentLength;
-	long long m_consumed;
+	bool _isAllocated;
+	long long _contentLength;
+	long long _consumed;
 
 private:
 	IdentityDecoder(void);

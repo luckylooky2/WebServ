@@ -2,25 +2,16 @@
 #include "ChunkDecoder.hpp"
 #include <cstdlib>
 #include <iostream>
-//#include <config/Configuration.hpp>
 
 ChunkDecoder::ChunkDecoder(bool isAllocated) :
-		m_isAllocated(isAllocated),
-		m_state(S_NOT_STARTED),
-		m_sizeNb(0),
-		m_sizeStr(""),
-		m_parsedChunk(""),
-		m_totalSize(0) {}
+		_isAllocated(isAllocated),
+		_state(S_NOT_STARTED),
+		_sizeNb(0),
+		_sizeStr(""),
+		_parsedChunk(""),
+		_totalSize(0) {}
 
 ChunkDecoder::~ChunkDecoder() {}
-
-#define SIZE_CONVERSION()											\
-		char *endPtr;												\
-		std::string hex_intro = "0x" + m_sizeStr;					\
-		m_sizeNb = strtol(hex_intro.c_str(), &endPtr, 16);			\
-		if (endPtr == hex_intro.c_str())							\
-			throw Exception ("Hexadecimal conversion impossible"); 	\
-		m_sizeStr = "";
 
 bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &consumed, bool max) {
 	std::string copy = in;
@@ -29,7 +20,7 @@ bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &cons
 		return (false);
 	while (1)
 	{
-		switch (m_state)
+		switch (_state)
 		{
 			case S_NOT_STARTED:
 			case S_SIZE:
@@ -40,21 +31,24 @@ bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &cons
 				if (found != std::string::npos)
 				{
 					if (found != 0)
-						m_sizeStr = copy.substr(0, found);
+						_sizeStr = copy.substr(0, found);
 					else
-						m_sizeStr = copy.substr(0, 1);
+						_sizeStr = copy.substr(0, 1);
 					
 					consumed += found + 2;
 			
-					if (m_sizeStr.empty())
+					if (_sizeStr.empty())
 					{
-						m_state = S_SIZE;
+						_state = S_SIZE;
 						return (false);
 					}
 					
-					SIZE_CONVERSION();
-				
-					m_sizeStr = "";
+					char *endPtr;		
+					std::string hex_intro = "0x" + _sizeStr;			
+					_sizeNb = ::strtol(hex_intro.c_str(), &endPtr, 16);	
+					if (endPtr == hex_intro.c_str())						
+						throw Exception ("Hexadecimal conversion impossible"); 
+					_sizeStr = "";
 					copy.erase(0, found + 2);
 				}
 				else
@@ -62,44 +56,44 @@ bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &cons
 					return (false);
 				}
 
-				if (m_sizeNb == 0)
+				if (_sizeNb == 0)
 				{
-					m_state = S_OVER;
+					_state = S_OVER;
 					return (true);
 				
 				}
 				else
 				{
-					m_state = S_CHUNK;	
+					_state = S_CHUNK;	
 				}
 				break;
 			}
 
 			case S_CHUNK:
 			{
-				if (copy.size() <= (size_t)m_sizeNb)
+				if (copy.size() <= (size_t)_sizeNb)
 				{
 			
 					out += copy;
-					m_sizeNb -= copy.size();
+					_sizeNb -= copy.size();
 					consumed += copy.size();
 					copy.erase(0, std::string::npos);
 				}
 				else
 				{
-					m_parsedChunk = copy.substr(0, m_sizeNb);
+					_parsedChunk = copy.substr(0, _sizeNb);
 					if (!max)
-						out += m_parsedChunk;
-					consumed += m_sizeNb;
-					m_parsedChunk = "";
+						out += _parsedChunk;
+					consumed += _sizeNb;
+					_parsedChunk = "";
 					
-					copy.erase(0, m_sizeNb);
-					m_sizeNb = 0;
+					copy.erase(0, _sizeNb);
+					_sizeNb = 0;
 				}
 				
-				if (m_sizeNb == 0)
+				if (_sizeNb == 0)
 				{
-					m_state = S_CHUNK_END;
+					_state = S_CHUNK_END;
 				}
 				if (copy.empty())
 					return (false);
@@ -115,13 +109,13 @@ bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &cons
 				{
 					consumed += f + 2;
 					copy.erase(0, f + 2);
-					m_state = S_SIZE;
+					_state = S_SIZE;
 				}
 				else if ((f = copy.find("\r")) != std::string::npos)
 				{
 					consumed += f + 1;
 					copy.erase(0, f + 1);
-					m_state = S_CHUNK_END2;
+					_state = S_CHUNK_END2;
 				}
 				else
 				{
@@ -142,11 +136,11 @@ bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &cons
 				{
 					consumed += f + 1;
 					copy.erase(0, f + 1);
-					m_state = S_SIZE;
+					_state = S_SIZE;
 				}
 				else if (copy.size() != 0)
 				{
-					m_state = S_CHUNK_END;
+					_state = S_CHUNK_END;
 				}
 				
 				if (copy.empty())
@@ -169,15 +163,13 @@ bool ChunkDecoder::consume(const std::string& in, std::string& out, size_t &cons
 	return (false);
 }
 
-ChunkDecoder::State
-ChunkDecoder::state()
-{
-	return (m_state);
+ChunkDecoder::State ChunkDecoder::state() {
+	return (_state);
 }
 
 void
 ChunkDecoder::cleanup()
 {
-	if (m_isAllocated)
+	if (_isAllocated)
 		delete this;
 }
