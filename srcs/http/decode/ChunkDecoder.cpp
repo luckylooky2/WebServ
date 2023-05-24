@@ -5,7 +5,7 @@
 
 ChunkDecoder::ChunkDecoder(bool isAllocated) :
 		_isAllocated(isAllocated),
-		_state(S_NOT_STARTED),
+		_state(NOT_STARTED),
 		_sizeNb(0),
 		_sizeStr(""),
 		_parsedChunk(""),
@@ -22,8 +22,8 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 	{
 		switch (_state)
 		{
-			case S_NOT_STARTED:
-			case S_SIZE:
+			case NOT_STARTED:
+			case SIZE:
 			{
 				size_t found;
 				found = copy.find("\r\n");
@@ -39,7 +39,7 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 			
 					if (_sizeStr.empty())
 					{
-						_state = S_SIZE;
+						_state = SIZE;
 						return (false);
 					}
 					
@@ -58,18 +58,18 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 
 				if (_sizeNb == 0)
 				{
-					_state = S_OVER;
+					_state = OVER;
 					return (true);
 				
 				}
 				else
 				{
-					_state = S_CHUNK;	
+					_state = CHUNK;	
 				}
 				break;
 			}
 
-			case S_CHUNK:
+			case CHUNK:
 			{
 				if (copy.size() <= (size_t)_sizeNb)
 				{
@@ -93,14 +93,14 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 				
 				if (_sizeNb == 0)
 				{
-					_state = S_CHUNK_END;
+					_state = CHUNK_END;
 				}
 				if (copy.empty())
 					return (false);
 				break;
 			}
 
-			case S_CHUNK_END:
+			case CHUNK_END:
 			{
 				size_t f;
 				
@@ -109,13 +109,13 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 				{
 					consumed += f + 2;
 					copy.erase(0, f + 2);
-					_state = S_SIZE;
+					_state = SIZE;
 				}
 				else if ((f = copy.find("\r")) != std::string::npos)
 				{
 					consumed += f + 1;
 					copy.erase(0, f + 1);
-					_state = S_CHUNK_END2;
+					_state = CHUNK_END2;
 				}
 				else
 				{
@@ -126,21 +126,19 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 
 				break;
 			}
-			case S_CHUNK_END2:
+			case CHUNK_END2:
 			{
-			
-				size_t f;
-			
+				std::size_t f;
 				f = copy.find("\n");
 				if (f != std::string::npos)
 				{
 					consumed += f + 1;
 					copy.erase(0, f + 1);
-					_state = S_SIZE;
+					_state = SIZE;
 				}
 				else if (copy.size() != 0)
 				{
-					_state = S_CHUNK_END;
+					_state = CHUNK_END;
 				}
 				
 				if (copy.empty())
@@ -148,18 +146,12 @@ bool ChunkDecoder::parse(const std::string& in, std::string& out, size_t &consum
 					
 				break;
 			}	
-
-			case S_OVER:
+			case OVER:
 			{
 				return (true);
 			}
 		}
 	}
-
-	
-	
-	
-
 	return (false);
 }
 
@@ -167,9 +159,7 @@ ChunkDecoder::State ChunkDecoder::state() {
 	return (_state);
 }
 
-void
-ChunkDecoder::cleanup()
-{
+void ChunkDecoder::cleanup() {
 	if (_isAllocated)
 		delete this;
 }

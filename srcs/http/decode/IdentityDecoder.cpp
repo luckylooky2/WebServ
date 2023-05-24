@@ -16,8 +16,9 @@ bool IdentityDecoder::parse(const std::string &in, std::string &out, size_t &con
 		out.append(in.c_str(), in.c_str() + consumed);
 
 	_consumed += consumed;
-
-	return (_consumed == _contentLength);
+	if (_consumed == _contentLength)
+		return (true);
+	return (false);
 }
 
 void IdentityDecoder::cleanup() {

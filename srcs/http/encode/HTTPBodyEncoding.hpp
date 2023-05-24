@@ -20,7 +20,7 @@ public:
 	virtual ~HTTPBodyEncoding(void);
 
 public:
-	static IHTTPBodyDecoder* decoderFor(const Header &header);
+	static IHTTPBodyDecoder* decodeSelector(const Header &header);
 };
 
 #endif

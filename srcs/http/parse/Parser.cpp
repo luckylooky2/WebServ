@@ -205,7 +205,7 @@ void Parser::parse(char c) {
 
 		case Parser::BODY:
 			_state = Parser::BODY_DECODE;
-			_bodyDecoder = HTTPBodyEncoding::decoderFor(this->_header);
+			_bodyDecoder = HTTPBodyEncoding::decodeSelector(this->_header);
 			if (_bodyDecoder == NULL) {
 				_state = Parser::END;
 				break;

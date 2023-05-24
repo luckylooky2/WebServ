@@ -106,18 +106,6 @@ const char& HTTPLocationInterpretor::lastChar(void) {
 	return (_lastChar);
 }
 
-std::list<std::string>& HTTPLocationInterpretor::middleList(void) {
-	return (_middleList);
-}
-
-void HTTPLocationInterpretor::middleList(std::string &middleElement) {
-	_middleList.push_back(middleElement);
-}
-
-std::string & HTTPLocationInterpretor::middleElement(void) {
-	return (_middle);
-}
-
 void HTTPLocationInterpretor::erase() {
 	_middleList.pop_back();
 }

@@ -43,9 +43,6 @@ class HTTPLocationInterpretor {
 		const std::string& exact(void);
 		const char& firstChar(void);
 		const char& lastChar(void);
-		std::list<std::string>& middleList(void);
-		void middleList(std::string &middleElement);
-		std::string& middleElement(void);
 		void erase();
 		void setEnd(std::string end);	
 		bool next(char &c);

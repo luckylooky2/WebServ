@@ -25,10 +25,8 @@ HTTPFindLocation::HTTPFindLocation(const HTTPFindLocation &other) :
 HTTPFindLocation::~HTTPFindLocation(void) {}
 
 HTTPFindLocation&
-HTTPFindLocation::operator =(const HTTPFindLocation &other)
-{
-	if (this != &other)
-	{
+HTTPFindLocation::operator =(const HTTPFindLocation &other) {
+	if (this != &other) {
 		_clientPath = other._clientPath;
 		_serverLocations = other._serverLocations;
 		_locationBlock = other._locationBlock;
@@ -37,36 +35,17 @@ HTTPFindLocation::operator =(const HTTPFindLocation &other)
 }
 
 HTTPFindLocation&
-HTTPFindLocation::location(const LocationBlock *locationBlock)
-{
+HTTPFindLocation::location(const LocationBlock *locationBlock) {
 	_locationBlock = locationBlock;
 
 	return (*this);
 }
 
-const LocationBlock*
-HTTPFindLocation::location(void) const
-{
+const LocationBlock* HTTPFindLocation::location(void) const {
 	return (_locationBlock);
 }
 
-#define FIND_BEST(possibleLocationList, it_PossibleLoc, ite_PossibleLoc,loc, apply)					\
-	while (it_PossibleLoc != ite_PossibleLoc)														\
-	{																								\
-		if (it_PossibleLoc->apply().size() > loc.begin()->start().size())							\
-		{																							\
-			loc.pop_back();																			\
-			loc.push_back(*it_PossibleLoc);															\
-		}																							\
-		it_PossibleLoc++;																			\
-	}																								\
-	it_PossibleLoc = possibleLocationList.begin();
-
-
-
-HTTPFindLocation&
-HTTPFindLocation::parse(void)
-{
+HTTPFindLocation& HTTPFindLocation::parse(void) {
 	std::list<LocationBlock*>::iterator it = _serverLocations.begin();
 	std::list<LocationBlock*>::iterator ite = _serverLocations.end();
 
@@ -78,9 +57,7 @@ HTTPFindLocation::parse(void)
 
 	std::list<HTTPLocationInterpretor> possibleLocationList;
 	
-	
-	while (it != ite)
-	{
+	while (it != ite) {
 		HTTPLocationInterpretor interpretor((*it)->getPath(), *it);
 
 		char c;
@@ -92,15 +69,6 @@ HTTPFindLocation::parse(void)
 
 		while (interpretor.next(c))
 			interpretor.parse(c);
-
-		if (!(interpretor.exact().empty()))
-		{
-			if (interpretor.exact().compare(_clientPath) == 0 || interpretor.exact().compare(_clientPath + "/") == 0)
-				possibleLocationList.push_back(interpretor);
-
-				it++;
-				continue;
-		}
 	
 		if (interpretor.firstChar() != '*') {
 			if (!(interpretor.start().empty())) {
@@ -116,7 +84,6 @@ HTTPFindLocation::parse(void)
 			}
 		}
 
-				
 		if (!(interpretor.end().empty())) {
 			std::string end = interpretor.end();
 
@@ -132,9 +99,8 @@ HTTPFindLocation::parse(void)
 			}
 		}
 
-		if (start || endIndicator)
-		{
-				possibleLocationList.push_back(interpretor);
+		if (start || endIndicator) {
+			possibleLocationList.push_back(interpretor);
 		}
 		it++;
 	}
@@ -146,23 +112,18 @@ HTTPFindLocation::parse(void)
 
 	std::list<HTTPLocationInterpretor> loc;
 	loc.push_back(*it_listToCheck);
-	
-	FIND_BEST(listToCheck, it_listToCheck, ite_listToCheck, loc, start);
 
-	// while (it_listToCheck != ite_listToCheck)													
-	// {																								
-	// 	if (it_listToCheck-> loc.begin()->start().size())							
-	// 	{																							
-	// 		loc.pop_back();																			
-	// 		loc.push_back(*it_listToCheck);															
-	// 	}																							
-	// 	it_listToCheck++;																			
-	// }																								
-	// it_listToCheck = possibleLocationList.begin();
-
-	std::cout << "loc.size() : " << loc.size() << std::endl;
+	while (it_listToCheck != ite_listToCheck)													
+	{																								
+		if (it_listToCheck->start().size() > loc.begin()->start().size())							
+		{																							
+			loc.pop_back();																			
+			loc.push_back(*it_listToCheck);															
+		}																							
+		it_listToCheck++;																			
+	}																								
+	it_listToCheck = possibleLocationList.begin();
 	HTTPLocationInterpretor &bestLocation = *(loc.begin());
-	std::cout <<bestLocation.locationBlock()->getPath() << std::endl;
 	location(bestLocation.locationBlock());
 	
 	return (*this);
