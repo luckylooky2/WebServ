@@ -50,6 +50,5 @@ int main(int argc, char* argv[], char** envp) {
 		logger.error(e.message());
 	}
 	ReleaseResource::pointer<Webserv>(webserv);
-	// system("leaks webserv");
 	return (0);
 }
